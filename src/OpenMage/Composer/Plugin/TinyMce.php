@@ -23,11 +23,17 @@ class TinyMce implements PluginInterface
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENAMGE.txt';
 
+    /**
+     * @var string[]
+     */
     public array $modules = [
         self::TINYMCE_MODULE            => 'js/tinymce',
         self::TINYMCE_MODULE_LANGUAGE   => 'js/tinymce/langs',
     ];
 
+    /**
+     * @var string[]
+     */
     public array $installedModules = [];
 
     protected Composer $composer;
@@ -43,28 +49,14 @@ class TinyMce implements PluginInterface
         $this->io = $io;
     }
 
-    /**
-     * @param Composer $composer
-     * @param IOInterface $io
-     * @return void
-     */
     public function deactivate(Composer $composer, IOInterface $io): void
     {
     }
 
-    /**
-     * @param Composer $composer
-     * @param IOInterface $io
-     * @return void
-     */
     public function uninstall(Composer $composer, IOInterface $io): void
     {
     }
 
-    /**
-     * @param Event $event
-     * @return void
-     */
     public function process(Event $event): void
     {
         $io = $event->getIO();
@@ -72,6 +64,7 @@ class TinyMce implements PluginInterface
             $module = $this->getTinyMceModule($event, $io, $vendorModule);
             if ($module) {
                 $rootDir    = getcwd();
+                /** @var string $vendorDir */
                 $vendorDir  = $event->getComposer()->getConfig()->get('vendor-dir');
 
                 $version     = $this->getInstalledVersion(self::TINYMCE_MODULE);
