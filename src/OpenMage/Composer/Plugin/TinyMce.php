@@ -26,7 +26,7 @@ class TinyMce implements PluginInterface
     /**
      * @var string[]
      */
-    public array $modules = [
+    public static array $modules = [
         self::TINYMCE_MODULE            => 'js/tinymce',
         self::TINYMCE_MODULE_LANGUAGE   => 'js/tinymce/langs',
     ];
@@ -57,60 +57,55 @@ class TinyMce implements PluginInterface
     {
     }
 
-    public function process(Event $event): void
+    public function process(Event $event, string $magentoRootDir): void
     {
         $io = $event->getIO();
-        foreach ($this->modules as $vendorModule => $target) {
-            $module = $this->getTinyMceModule($event, $io, $vendorModule);
-            if ($module) {
+        foreach (self::$modules as $moduleName => $copyTarget) {
+            $tinyMceModule = $this->getTinyMceModule($event, $io, $moduleName);
+            if ($tinyMceModule) {
                 $rootDir    = getcwd();
                 /** @var string $vendorDir */
-                $vendorDir  = $event->getComposer()->getConfig()->get('vendor-dir');
+                $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
 
                 $version     = $this->getInstalledVersion(self::TINYMCE_MODULE);
                 $mainVersion = $version[0] ?? null;
 
+                $copySource  = $vendorDir . '/' . $moduleName;
+                $copyTarget  = $rootDir . '/' . $copyTarget;
 
-                $source = $vendorDir . '/' . $vendorModule;
-                $target = $rootDir . '/' . $target;
-
-                if ($vendorModule === self::TINYMCE_MODULE) {
-                    $filesystem = new Filesystem();
-                    switch ($mainVersion) {
-                        case '6':
-                            $filesystem->remove([
+                if ($moduleName === self::TINYMCE_MODULE) {
+                    switch ((int) $mainVersion) {
+                        case 6:
+                            $files = [
                                 $rootDir . '/' . self::TINYMCE_LICENSE_FILE,
-                                $source . '/' . self::TINYMCE_LICENSE_NOTE
-                            ]);
+                                $copySource . '/' . self::TINYMCE_LICENSE_NOTE
+                            ];
+                            $this->removedTinyMceLicenseFiles($files);
                             break;
-                        case '7':
-                            $content = <<<TEXT
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL TINYMCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-TEXT;
-                            $filesystem->dumpFile($rootDir . '/' . self::TINYMCE_LICENSE_FILE, $content);
-
-                            $content = <<<TEXT
-THE USE OF TINYMCE IN THIS PROJECT IS POSSIBLE ON THE BASIS OF THE AGREEMENT CONCLUDED BETWEEN
-THE OWNER OF TINYMCE AND THE COMMUNITY OF THIS OPEN-SOURCE PROJECT. UNDER THE CONCLUDED
-AGREEMENT, IT IS PROHIBITED TO USE TINYMCE OUTSIDE OF THIS PROJECT. IF THIS IS THE CASE, TINYMCE MUST
-BE USED IN LINE WITH THE ORIGINAL OPEN-SOURCE LICENSE.
-TEXT;
-                            $filesystem->dumpFile($source . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+                        case 7:
+                            $this->addTinyMceLicenseFile($rootDir);
+                            $this->addTinyMceLicenseNote($copySource);
                             break;
                     }
                 }
 
-                if ($vendorModule === self::TINYMCE_MODULE_LANGUAGE) {
-                    $source = $source . '/langs' . $mainVersion;
+                if ($moduleName === self::TINYMCE_MODULE_LANGUAGE) {
+                    $copySource = $copySource . '/langs' . $mainVersion;
                 }
 
-                $this->copy($source, $target);
+                $this->copy($copySource, $magentoRootDir . $copyTarget);
             }
         }
+    }
+
+    private function getInstalledVersion(string $module): string
+    {
+        return $this->installedModules[$module];
+    }
+
+    private function setInstalledVersion(string $module, string $version): void
+    {
+        $this->installedModules[$module] = $version;
     }
 
     private function getTinyMceModule(Event $event, IOInterface $io, string $module): ?BasePackage
@@ -134,23 +129,51 @@ TEXT;
         return null;
     }
 
-    private function getInstalledVersion(string $module): string
-    {
-        return $this->installedModules[$module];
-    }
-
-    private function setInstalledVersion(string $module, string $version): void
-    {
-        $this->installedModules[$module] = $version;
-    }
-
     private function copy(string $source, string $target): void
     {
         $filesystem = new Filesystem();
         $finder = new Finder();
         $finder->in($source)->name('*.js');
         foreach ($finder as $file) {
-            $filesystem->copy($file->getPathname(), $target . '/' . $file->getRelativePathname());
+            $copySource = $file->getPathname();
+            $copytarget = $target . '/' . $file->getRelativePathname();
+            $filesystem->copy($copySource, $copytarget);
+            if ($io->isVeryVerbose()) {
+                $io->write(sprintf('Copy %s to %s', $copySource, $copytarget));
+            }
         }
+    }
+
+    private function addTinyMceLicenseFile(string $targetDir): void
+    {
+        $content = <<<TEXT
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL TINYMCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+TEXT;
+
+        $filesystem = new Filesystem();
+        $filesystem->dumpFile($targetDir . '/' . self::TINYMCE_LICENSE_FILE, $content);
+    }
+
+    private function addTinyMceLicenseNote(string $targetDir): void
+    {
+        $content = <<<TEXT
+THE USE OF TINYMCE IN THIS PROJECT IS POSSIBLE ON THE BASIS OF THE AGREEMENT CONCLUDED BETWEEN
+THE OWNER OF TINYMCE AND THE COMMUNITY OF THIS OPEN-SOURCE PROJECT. UNDER THE CONCLUDED
+AGREEMENT, IT IS PROHIBITED TO USE TINYMCE OUTSIDE OF THIS PROJECT. IF THIS IS THE CASE, TINYMCE MUST
+BE USED IN LINE WITH THE ORIGINAL OPEN-SOURCE LICENSE.
+TEXT;
+
+        $filesystem = new Filesystem();
+        $filesystem->dumpFile($targetDir . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+    }
+
+    private function removedTinyMceLicenseFiles(array $files): void
+    {
+        $filesystem = new Filesystem();
+        $filesystem->remove($files);
     }
 }

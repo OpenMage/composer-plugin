@@ -14,7 +14,7 @@ use Composer\Script\ScriptEvents;
 /**
  * Class Plugin
  */
-class Plugin implements PluginInterface, EventSubscriberInterface
+class Plugin implements OpenMageInterface, PluginInterface, EventSubscriberInterface
 {
     protected Composer $composer;
 
@@ -50,7 +50,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function processTinyMce(Event $event): void
     {
+        $composer = $event->getComposer();
+        $extra = $composer->getPackage()->getExtra();
+
+        $magentoRootDir = array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $extra) ? $extra[self::EXTRA_MAGENTO_ROOT_DIR] : '.';
+        $magentoRootDir .= '/';
+
         $plugin = new Plugin\TinyMce();
-        $plugin->process($event);
+        $plugin->process($event, $magentoRootDir);
     }
 }
