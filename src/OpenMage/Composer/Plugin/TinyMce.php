@@ -93,7 +93,7 @@ class TinyMce implements PluginInterface
                     $copySource = $copySource . '/langs' . $mainVersion;
                 }
 
-                $this->copy($copySource, $magentoRootDir . $copyTarget);
+                $this->copy($io, $copySource, $magentoRootDir . $copyTarget);
             }
         }
     }
@@ -129,7 +129,7 @@ class TinyMce implements PluginInterface
         return null;
     }
 
-    private function copy(string $source, string $target): void
+    private function copy(IOInterface $io, string $source, string $target): void
     {
         $filesystem = new Filesystem();
         $finder = new Finder();
