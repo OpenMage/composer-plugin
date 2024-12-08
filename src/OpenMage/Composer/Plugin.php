@@ -53,8 +53,10 @@ class Plugin implements OpenMageInterface, PluginInterface, EventSubscriberInter
         $composer = $event->getComposer();
         $extra = $composer->getPackage()->getExtra();
 
-        $magentoRootDir = array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $extra) ? $extra[self::EXTRA_MAGENTO_ROOT_DIR] : '.';
-        $magentoRootDir .= '/';
+        $magentoRootDir = '';
+        if (array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $extra) && $extra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.') {
+            $magentoRootDir = $extra[self::EXTRA_MAGENTO_ROOT_DIR] . '/';
+        }
 
         $plugin = new Plugin\TinyMce();
         $plugin->process($event, $magentoRootDir);

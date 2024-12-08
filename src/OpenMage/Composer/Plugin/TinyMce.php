@@ -63,7 +63,7 @@ class TinyMce implements PluginInterface
         foreach (self::$modules as $moduleName => $copyTarget) {
             $tinyMceModule = $this->getTinyMceModule($event, $io, $moduleName);
             if ($tinyMceModule) {
-                $rootDir    = getcwd();
+                $rootDir     = getcwd();
                 /** @var string $vendorDir */
                 $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
 
@@ -71,7 +71,7 @@ class TinyMce implements PluginInterface
                 $mainVersion = $version[0] ?? null;
 
                 $copySource  = $vendorDir . '/' . $moduleName;
-                $copyTarget  = $rootDir . '/' . $copyTarget;
+                $copyTarget  = $rootDir . '/' . $magentoRootDir . $copyTarget;
 
                 if ($moduleName === self::TINYMCE_MODULE) {
                     switch ((int) $mainVersion) {
@@ -93,7 +93,7 @@ class TinyMce implements PluginInterface
                     $copySource = $copySource . '/langs' . $mainVersion;
                 }
 
-                $this->copy($io, $copySource, $magentoRootDir . $copyTarget);
+                $this->copy($io, $copySource, $copyTarget);
             }
         }
     }
@@ -133,7 +133,11 @@ class TinyMce implements PluginInterface
     {
         $filesystem = new Filesystem();
         $finder = new Finder();
-        $finder->in($source)->name('*.js');
+        $finder
+            ->files()
+            ->in($source)
+            ->name('*.css')
+            ->name('*.js');
         foreach ($finder as $file) {
             $copySource = $file->getPathname();
             $copytarget = $target . '/' . $file->getRelativePathname();
