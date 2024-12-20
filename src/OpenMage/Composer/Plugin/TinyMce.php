@@ -21,7 +21,7 @@ class TinyMce implements PluginInterface
     public const TINYMCE_MODULE             = 'tinymce/tinymce';
     public const TINYMCE_MODULE_LANGUAGE    = 'mklkj/tinymce-i18n';
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
-    public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENAMGE.txt';
+    public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
 
     /**
      * @var string[]
