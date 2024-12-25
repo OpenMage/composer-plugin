@@ -4,151 +4,60 @@ declare(strict_types=1);
 
 namespace OpenMage\Composer\Plugin;
 
-use Composer\Composer;
-use Composer\InstalledVersions;
-use Composer\IO\IOInterface;
 use Composer\Package\BasePackage;
-use Composer\Plugin\PluginInterface;
-use Composer\Script\Event;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class TinyMce
  */
-class TinyMce implements PluginInterface
+class TinyMce extends AbstractVendorCopyPlugin
 {
-    public const TINYMCE_MODULE             = 'tinymce/tinymce';
-    public const TINYMCE_MODULE_LANGUAGE    = 'mklkj/tinymce-i18n';
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
 
-    /**
-     * @var string[]
-     */
-    public static array $modules = [
-        self::TINYMCE_MODULE            => 'js/tinymce',
-        self::TINYMCE_MODULE_LANGUAGE   => 'js/tinymce/langs',
-    ];
-
-    /**
-     * @var string[]
-     */
-    public array $installedModules = [];
-
-    protected Composer $composer;
-
-    protected IOInterface $io;
-
-    /**
-     * @see PluginInterface::activate
-     */
-    public function activate(Composer $composer, IOInterface $io): void
+    public function getVendorName(): string
     {
-        $this->composer = $composer;
-        $this->io = $io;
+        return 'tinymce/tinymce';
     }
 
-    public function deactivate(Composer $composer, IOInterface $io): void
+    public function getCopySource(): string
     {
+        return '';
     }
 
-    public function uninstall(Composer $composer, IOInterface $io): void
+    public function getCopyTarget(): string
     {
+        return 'js/tinymce';
     }
 
-    public function process(Event $event, string $magentoRootDir): void
+    public function getFilesByName(): array
     {
-        $io = $event->getIO();
-        foreach (self::$modules as $moduleName => $copyTarget) {
-            $tinyMceModule = $this->getTinyMceModule($event, $io, $moduleName);
-            if ($tinyMceModule) {
-                $rootDir     = getcwd();
-                /** @var string $vendorDir */
-                $vendorDir   = $event->getComposer()->getConfig()->get('vendor-dir');
-
-                $version     = $this->getInstalledVersion(self::TINYMCE_MODULE);
-                $mainVersion = $version[0] ?? null;
-
-                $copySource  = $vendorDir . '/' . $moduleName;
-                $copyTarget  = $rootDir . '/' . $magentoRootDir . $copyTarget;
-
-                if ($moduleName === self::TINYMCE_MODULE) {
-                    switch ((int) $mainVersion) {
-                        case 6:
-                            $files = [
-                                $rootDir . '/' . self::TINYMCE_LICENSE_FILE,
-                                $copySource . '/' . self::TINYMCE_LICENSE_NOTE
-                            ];
-                            $this->removedTinyMceLicenseFiles($files);
-                            break;
-                        case 7:
-                            $this->addTinyMceLicenseFile($rootDir);
-                            $this->addTinyMceLicenseNote($copySource);
-                            break;
-                    }
-                }
-
-                if ($moduleName === self::TINYMCE_MODULE_LANGUAGE) {
-                    $copySource = $copySource . '/langs' . $mainVersion;
-                }
-
-                $this->copy($io, $copySource, $copyTarget);
-            }
-        }
+        return ['*.css', '*.js'];
     }
 
-    private function getInstalledVersion(string $module): string
+    public function copyFiles(): void
     {
-        return $this->installedModules[$module];
-    }
-
-    private function setInstalledVersion(string $module, string $version): void
-    {
-        $this->installedModules[$module] = $version;
-    }
-
-    private function getTinyMceModule(Event $event, IOInterface $io, string $module): ?BasePackage
-    {
-        if (!InstalledVersions::isInstalled($module)) {
-            return null;
+        $package = $this->getPackage();
+        if (!$package instanceof BasePackage) {
+            return;
         }
 
-        $locker = $event->getComposer()->getLocker();
-        $repo   = $locker->getLockedRepository();
-
-        foreach ($repo->getPackages() as $package) {
-            if ($package->getName() === $module) {
-                $this->setInstalledVersion($module, $package->getVersion());
-                if ($io->isVerbose()) {
-                    $io->write(sprintf('%s found with version %s', $module, $package->getVersion()));
-                }
-                return $package;
-            }
+        $version = $package->getVersion();
+        switch ((int) $version[0]) {
+            case 6:
+                $this->removedTinyMceLicenseFiles();
+                break;
+            case 7:
+                $this->addTinyMceLicenseFile();
+                $this->addTinyMceLicenseNote();
+                break;
         }
-        return null;
+
+        parent::copyFiles();
     }
 
-    private function copy(IOInterface $io, string $source, string $target): void
-    {
-        $filesystem = new Filesystem();
-        $finder = new Finder();
-        $finder
-            ->files()
-            ->in($source)
-            ->name('*.css')
-            ->name('*.js');
-        foreach ($finder as $file) {
-            $copySource = $file->getPathname();
-            $copytarget = $target . '/' . $file->getRelativePathname();
-            $filesystem->copy($copySource, $copytarget);
-            if ($io->isVeryVerbose()) {
-                $io->write(sprintf('Copy %s to %s', $copySource, $copytarget));
-            }
-        }
-    }
-
-    private function addTinyMceLicenseFile(string $targetDir): void
+    private function addTinyMceLicenseFile(): void
     {
         $content = <<<TEXT
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
@@ -159,10 +68,18 @@ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 TEXT;
 
         $filesystem = new Filesystem();
-        $filesystem->dumpFile($targetDir . '/' . self::TINYMCE_LICENSE_FILE, $content);
+
+        try {
+            $filesystem->dumpFile($this->getRootDirectory() . '/' . self::TINYMCE_LICENSE_FILE, $content);
+            if ($this->event->getIO()->isVerbose()) {
+                $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_FILE));
+            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
+        }
     }
 
-    private function addTinyMceLicenseNote(string $targetDir): void
+    private function addTinyMceLicenseNote(): void
     {
         $content = <<<TEXT
 THE USE OF TINYMCE IN THIS PROJECT IS POSSIBLE ON THE BASIS OF THE AGREEMENT CONCLUDED BETWEEN
@@ -172,12 +89,33 @@ BE USED IN LINE WITH THE ORIGINAL OPEN-SOURCE LICENSE.
 TEXT;
 
         $filesystem = new Filesystem();
-        $filesystem->dumpFile($targetDir . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+
+        try {
+            $filesystem->dumpFile($this->getVendorDirectory() . '/' . $this->getVendorName() . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+            if ($this->event->getIO()->isVerbose()) {
+                $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_NOTE));
+            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
+        }
     }
 
-    private function removedTinyMceLicenseFiles(array $files): void
+    private function removedTinyMceLicenseFiles(): void
     {
+        $files = [
+            $this->getRootDirectory() . '/' . self::TINYMCE_LICENSE_FILE,
+            $this->getCopySource() . '/' . self::TINYMCE_LICENSE_NOTE,
+        ];
+
         $filesystem = new Filesystem();
-        $filesystem->remove($files);
+
+        try {
+            $filesystem->remove($files);
+            if ($this->event->getIO()->isVeryVerbose()) {
+                $this->event->getIO()->write(sprintf('Removed %s and %s', self::TINYMCE_LICENSE_FILE, self::TINYMCE_LICENSE_NOTE));
+            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
+        }
     }
 }

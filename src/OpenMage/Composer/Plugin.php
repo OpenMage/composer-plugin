@@ -14,7 +14,7 @@ use Composer\Script\ScriptEvents;
 /**
  * Class Plugin
  */
-class Plugin implements OpenMageInterface, PluginInterface, EventSubscriberInterface
+class Plugin implements PluginInterface, EventSubscriberInterface
 {
     protected Composer $composer;
 
@@ -29,36 +29,31 @@ class Plugin implements OpenMageInterface, PluginInterface, EventSubscriberInter
         $this->io = $io;
     }
 
-    public function deactivate(Composer $composer, IOInterface $io): void
-    {
-    }
+    public function deactivate(Composer $composer, IOInterface $io): void {}
 
-    public function uninstall(Composer $composer, IOInterface $io): void
-    {
-    }
+    public function uninstall(Composer $composer, IOInterface $io): void {}
 
     /**
      * @see EventSubscriberInterface::getSubscribedEvents
+     * @see processVendorCopy
      */
     public static function getSubscribedEvents(): array
     {
         return [
-            ScriptEvents::POST_INSTALL_CMD => [['processTinyMce']],
-            ScriptEvents::POST_UPDATE_CMD  => [['processTinyMce']],
+            ScriptEvents::POST_INSTALL_CMD => [['processVendorCopy']],
+            ScriptEvents::POST_UPDATE_CMD  => [['processVendorCopy']],
         ];
     }
 
-    public function processTinyMce(Event $event): void
+    public function processVendorCopy(Event $event): void
     {
-        $composer = $event->getComposer();
-        $extra = $composer->getPackage()->getExtra();
+        $plugin = new Plugin\JQuery($event);
+        $plugin->copyFiles();
 
-        $magentoRootDir = '';
-        if (array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $extra) && $extra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.') {
-            $magentoRootDir = $extra[self::EXTRA_MAGENTO_ROOT_DIR] . '/';
-        }
+        $plugin = new Plugin\TinyMce($event);
+        $plugin->copyFiles();
 
-        $plugin = new Plugin\TinyMce();
-        $plugin->process($event, $magentoRootDir);
+        $plugin = new Plugin\TinyMceLanguages($event);
+        $plugin->copyFiles();
     }
 }
