@@ -65,11 +65,11 @@ class ChartJs extends AbstractPlugin
             $this->event->getIO()->write($message);
             return;
         }
-
+        $filesystem = new Filesystem();
         $fileName   = 'Chart.min.js';
         $filePath   = $this->getVendorDirectory() . '/' . $vendorName . '/dist/' . $fileName;
 
-        if (version_compare($version, self::MIN_NPM_VERSION, '>=')) {
+        if (version_compare($version, self::MIN_NPM_VERSION, '>=') && !$filesystem->exists($filePath)) {
             $distUrl = str_replace('{{version}}', $version, self::NPM_FALLBACK_URL);
             $content = file_get_contents($distUrl);
 
@@ -80,8 +80,6 @@ class ChartJs extends AbstractPlugin
                 $this->event->getIO()->write(sprintf('Could not read from %s', $distUrl));
                 return;
             }
-
-            $filesystem = new Filesystem();
 
             try {
                 $filesystem->dumpFile($filePath, $content);
