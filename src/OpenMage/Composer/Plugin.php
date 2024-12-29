@@ -10,6 +10,7 @@ use Composer\IO\IOInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
+use Symfony\Component\Finder\Finder;
 
 /**
  * Class Plugin
@@ -47,13 +48,53 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function processVendorCopy(Event $event): void
     {
-        $plugin = new Plugin\JQuery($event);
-        $plugin->copyFiles();
+        $plugins = $this->getPlugins(__DIR__ . '/VendorCopy/Plugins');
+        foreach ($plugins as $plugin) {
+            $plugin = new $plugin($event);
 
-        $plugin = new Plugin\TinyMce($event);
-        $plugin->copyFiles();
+            if (!$plugin instanceof VendorCopy\PluginInterface) {
+                $this->io->write('Could not load ' . $plugin);
+            }
 
-        $plugin = new Plugin\TinyMceLanguages($event);
-        $plugin->copyFiles();
+            $plugin->copyFiles();
+        }
+    }
+
+    public function getPlugins(string $path): array
+    {
+        $filenames = $this->getFilenames($path);
+        $namespaces = [];
+        foreach ($filenames as $filename) {
+            $namespaces[] = $this->getFullNamespace($filename) . '\\' . $this->getClassName($filename);
+        }
+        return $namespaces;
+    }
+
+    private function getClassName(string $filename): string
+    {
+        $directoriesAndFilename = explode('/', $filename);
+        $filename = array_pop($directoriesAndFilename);
+        $nameAndExtension = explode('.', $filename);
+        return array_shift($nameAndExtension);
+    }
+
+    private function getFullNamespace(string $filename): string
+    {
+        $lines = file($filename);
+        $array = preg_grep('/^namespace /', $lines);
+        $namespaceLine = array_shift($array);
+        $match = [];
+        preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+        return array_pop($match);
+    }
+
+    private function getFilenames(string $path): array
+    {
+        $finderFiles = Finder::create()->files()->in($path)->name('*.php');
+        $filenames = [];
+        foreach ($finderFiles as $finderFile) {
+            $filenames[] = $finderFile->getRealPath();
+        }
+        return $filenames;
     }
 }

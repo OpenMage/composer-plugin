@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\Plugin;
+namespace OpenMage\Composer\VendorCopy\Plugins;
+
+use OpenMage\Composer\VendorCopy\AbstractPlugin;
 
 /**
  * Class JQuery
  */
-class JQuery extends AbstractVendorCopyPlugin
+class JQuery extends AbstractPlugin
 {
     public function getVendorName(): string
     {
@@ -19,12 +21,10 @@ class JQuery extends AbstractVendorCopyPlugin
         return '';
     }
 
-
     public function getCopyTarget(): string
     {
         return 'js/lib/jquery';
     }
-
 
     public function getFilesByName(): array
     {

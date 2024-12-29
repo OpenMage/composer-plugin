@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\Plugin;
+namespace OpenMage\Composer\VendorCopy\Plugins;
 
 use Composer\InstalledVersions;
+use OpenMage\Composer\VendorCopy\AbstractPlugin;
 
 /**
  * Class TinyMceLanguages
  */
-class TinyMceLanguages extends AbstractVendorCopyPlugin
+class TinyMceLanguages extends AbstractPlugin
 {
     public const TINYMCE = 'tinymce/tinymce';
 

@@ -2,17 +2,16 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\Plugin;
+namespace OpenMage\Composer\VendorCopy;
 
 use Composer\InstalledVersions;
 use Composer\Package\BasePackage;
 use Composer\Script\Event;
-use OpenMage\Composer\VendorCopyInterface;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
 
-abstract class AbstractVendorCopyPlugin implements VendorCopyInterface
+abstract class AbstractPlugin implements PluginInterface
 {
     public const EXTRA_MAGENTO_ROOT_DIR = 'magento-root-dir';
     public const VENDOR_DIR             = 'vendor-dir';

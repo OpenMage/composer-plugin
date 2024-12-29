@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\Plugin;
+namespace OpenMage\Composer\VendorCopy\Plugins;
 
 use Composer\Package\BasePackage;
+use OpenMage\Composer\VendorCopy\AbstractPlugin;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 /**
  * Class TinyMce
  */
-class TinyMce extends AbstractVendorCopyPlugin
+class TinyMce extends AbstractPlugin
 {
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
