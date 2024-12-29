@@ -43,4 +43,6 @@ interface PluginInterface
      * @return string[]
      */
     public function getFilesByName(): array;
+
+    public function copyFiles(): void;
 }

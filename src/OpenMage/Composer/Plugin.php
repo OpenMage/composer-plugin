@@ -63,16 +63,20 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $plugins = $this->getPlugins(__DIR__ . '/VendorCopy/Plugins');
         foreach ($plugins as $plugin) {
-            $plugin = new $plugin($event);
+            $pluginLoaded = new $plugin($event);
 
-            if (!$plugin instanceof VendorCopy\PluginInterface) {
+            if (!$pluginLoaded instanceof VendorCopy\PluginInterface) {
                 $this->io->write('Could not load ' . $plugin);
+                return;
             }
 
-            $plugin->copyFiles();
+            $pluginLoaded->copyFiles();
         }
     }
 
+    /**
+     * @return string[]
+     */
     public function getPlugins(string $path): array
     {
         $filenames = $this->getFilenames($path);
@@ -93,17 +97,24 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function getFullNamespace(string $filename): string
     {
-        $lines = file($filename);
-        $array = preg_grep('/^namespace /', $lines);
+        $lines = (array) file($filename);
+        $array = (array) preg_grep('/^namespace /', $lines);
         $namespaceLine = array_shift($array);
         $match = [];
         preg_match('/^namespace (.*);$/', $namespaceLine, $match);
-        return array_pop($match);
+        return (string) array_pop($match);
     }
 
+    /**
+     * @return string[]
+     */
     private function getFilenames(string $path): array
     {
-        $finderFiles = Finder::create()->files()->in($path)->name('*.php');
+        $finderFiles = Finder::create()
+            ->files()
+            ->in($path)
+            ->name('*.php');
+
         $filenames = [];
         foreach ($finderFiles as $finderFile) {
             $filenames[] = $finderFile->getRealPath();

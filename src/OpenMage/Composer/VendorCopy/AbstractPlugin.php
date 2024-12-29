@@ -20,6 +20,7 @@ namespace OpenMage\Composer\VendorCopy;
 use Composer\InstalledVersions;
 use Composer\Package\BasePackage;
 use Composer\Script\Event;
+use Exception;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -71,7 +72,11 @@ abstract class AbstractPlugin implements PluginInterface
 
     protected function getRootDirectory(): string
     {
-        return getcwd();
+        $cwd = getcwd();
+        if ($cwd === false) {
+            throw new Exception('This should not happen.');
+        }
+        return $cwd;
     }
 
     protected function getVendorDirectory(): string
@@ -101,8 +106,7 @@ abstract class AbstractPlugin implements PluginInterface
 
         $filesystem = new Filesystem();
 
-        $finder = new Finder();
-        $finder
+        $finder = Finder::create()
             ->files()
             ->in($this->getFullCopySource())
             ->name($this->getFilesByName());

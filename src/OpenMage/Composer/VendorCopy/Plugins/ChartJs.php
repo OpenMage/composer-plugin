@@ -54,7 +54,9 @@ class ChartJs extends AbstractPlugin
 
     public function copyFiles(): void
     {
-        $version = ltrim(InstalledVersions::getPrettyVersion($this->getVendorName()), 'v');
+        $vendorName = $this->getVendorName();
+
+        $version = ltrim((string) InstalledVersions::getPrettyVersion($vendorName), 'v');
 
         if (version_compare($version, self::MIN_VERSION, '>') &&
             version_compare($version, self::MIN_NPM_VERSION, '<')
@@ -65,7 +67,7 @@ class ChartJs extends AbstractPlugin
         }
 
         $fileName   = 'Chart.min.js';
-        $filePath   = $this->getVendorDirectory() . '/' . $this->getVendorName() . '/dist/' . $fileName;
+        $filePath   = $this->getVendorDirectory() . '/' . $vendorName . '/dist/' . $fileName;
 
         if (version_compare($version, self::MIN_NPM_VERSION, '>=')) {
             $distUrl = str_replace('{{version}}', $version, self::NPM_FALLBACK_URL);
