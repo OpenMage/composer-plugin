@@ -20,29 +20,16 @@ namespace OpenMage\Composer\VendorCopy;
 /**
  * VendorCopyInterface interface
  */
-interface PluginInterface
+interface PluginNpmInterface
 {
-    /**
-     * Composer vendor/name
-     */
-    public function getComposerPackageName(): string;
+    public const NPM_FALLBACK_URL = 'https://unpkg.com/browse/{{flatpickr}}@{{version}}/dist/';
 
     /**
-     * Path to source files inside vendor directory
+     * NPM package name
      */
-    public function getCopySource(): string;
+    public function getNpmPackageName(): string;
 
-    /**
-     * Path to copy target
-     */
-    public function getCopyTarget(): string;
+    public function getNpmPackageFiles(): array;
 
-    /**
-     * Filename patternst to copy
-     *
-     * @return string[]
-     */
-    public function getFilesByName(): array;
-
-    public function copyFiles(): void;
+    public function downloadNpmFiles(): void;
 }

@@ -32,9 +32,22 @@ abstract class AbstractPlugin implements PluginInterface
 
     protected Event $event;
 
+    private bool $isInstalled;
+
+    private ?string $version;
+
     public function __construct(Event $event)
     {
-        $this->event = $event;
+        $composerPackageName = $this->getComposerPackageName();
+
+        $this->event        = $event;
+        $this->isInstalled  = InstalledVersions::isInstalled($composerPackageName);
+        $this->version      = $this->isInstalled ? InstalledVersions::getPrettyVersion($composerPackageName) : null;
+    }
+
+    protected function getIsInstalled(): bool
+    {
+        return $this->isInstalled;
     }
 
     /**
@@ -44,12 +57,11 @@ abstract class AbstractPlugin implements PluginInterface
 
     public function getPackage(): ?BasePackage
     {
-        $vendorName = $this->getVendorName();
-
-        if (!InstalledVersions::isInstalled($vendorName)) {
+        if (!$this->getIsInstalled()) {
             return null;
         }
 
+        $vendorName = $this->getComposerPackageName();
         $module = $this->getInstalledModule($vendorName);
         if ($module) {
             return $module;
@@ -104,6 +116,10 @@ abstract class AbstractPlugin implements PluginInterface
             return;
         }
 
+        if ($this instanceof AbstractNpmPlugin) {
+            $this->downloadNpmFiles();
+        }
+
         $filesystem = new Filesystem();
 
         $finder = Finder::create()
@@ -136,17 +152,17 @@ abstract class AbstractPlugin implements PluginInterface
         $this->installedModules[$vendorName] = $package;
     }
 
-    private function getFullCopySource(): string
+    protected function getFullCopySource(): string
     {
         return sprintf(
             '%s/%s/%s',
             $this->getVendorDirectory(),
-            $this->getVendorName(),
+            $this->getComposerPackageName(),
             $this->getCopySource(),
         );
     }
 
-    private function getFullCopyTarget(): string
+    protected function getFullCopyTarget(): string
     {
         return sprintf(
             '%s/%s%s',

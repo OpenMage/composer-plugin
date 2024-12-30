@@ -30,7 +30,7 @@ class TinyMce extends AbstractPlugin
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
 
-    public function getVendorName(): string
+    public function getComposerPackageName(): string
     {
         return 'tinymce/tinymce';
     }
@@ -105,7 +105,7 @@ TEXT;
         $filesystem = new Filesystem();
 
         try {
-            $filesystem->dumpFile($this->getVendorDirectory() . '/' . $this->getVendorName() . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+            $filesystem->dumpFile($this->getVendorDirectory() . '/' . $this->getComposerPackageName() . '/' . self::TINYMCE_LICENSE_NOTE, $content);
             if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_NOTE));
             }

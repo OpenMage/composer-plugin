@@ -20,28 +20,26 @@ namespace OpenMage\Composer\VendorCopy\Plugins;
 use OpenMage\Composer\VendorCopy\AbstractNpmPlugin;
 
 /**
- * Class JQuery
+ * Class Flatpickr
  */
-class ChartJs extends AbstractNpmPlugin
+class Flatpickr extends AbstractNpmPlugin
 {
     public function getNpmPackageName(): string
     {
-        return 'chart.js';
+        return 'flatpickr';
     }
 
     public function getNpmPackageFiles(): array
     {
         return [
-            'chart.umd.js',
-            'chart.umd.js.map',
-            'helpers.js',
-            'helpers.js.map',
+            'flatpickr.min.css',
+            'flatpickr.min.js',
         ];
     }
 
     public function getComposerPackageName(): string
     {
-        return 'nnnick/chartjs';
+        return 'flatpickr/flatpickr';
     }
 
     public function getCopySource(): string
@@ -51,11 +49,11 @@ class ChartJs extends AbstractNpmPlugin
 
     public function getCopyTarget(): string
     {
-        return 'js/chartjs';
+        return 'js/flatpickr';
     }
 
     public function getFilesByName(): array
     {
-        return ['*.js', '*.map'];
+        return ['*.css', '*.js'];
     }
 }

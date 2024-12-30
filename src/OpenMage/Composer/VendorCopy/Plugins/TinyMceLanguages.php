@@ -27,7 +27,7 @@ class TinyMceLanguages extends AbstractPlugin
 {
     public const TINYMCE = 'tinymce/tinymce';
 
-    public function getVendorName(): string
+    public function getComposerPackageName(): string
     {
         return 'mklkj/tinymce-i18n';
     }

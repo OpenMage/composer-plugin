@@ -24,7 +24,7 @@ use OpenMage\Composer\VendorCopy\AbstractPlugin;
  */
 class JQuery extends AbstractPlugin
 {
-    public function getVendorName(): string
+    public function getComposerPackageName(): string
     {
         return 'components/jquery';
     }
