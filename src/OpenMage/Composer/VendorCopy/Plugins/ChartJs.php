@@ -56,6 +56,10 @@ class ChartJs extends AbstractPlugin
     {
         $vendorName = $this->getVendorName();
 
+        if (!InstalledVersions::isInstalled($this->getVendorName())) {
+            return;
+        }
+
         $version = ltrim((string) InstalledVersions::getPrettyVersion($vendorName), 'v');
 
         if (version_compare($version, self::MIN_VERSION, '>') &&
