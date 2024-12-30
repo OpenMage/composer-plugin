@@ -30,7 +30,7 @@ class ChartJs extends AbstractPlugin
     public const MIN_VERSION        = '2.9.4';
     public const MIN_NPM_VERSION    = '4.1.0';
 
-    public const NPM_FALLBACK_URL   = 'https://cdn.jsdelivr.net/npm/chart.js@{{version}}/dist/chart.umd.js';
+    public const NPM_FALLBACK_URL   = 'https://cdn.jsdelivr.net/npm/chart.js@{{version}}/dist/';
 
     public function getVendorName(): string
     {
@@ -49,7 +49,7 @@ class ChartJs extends AbstractPlugin
 
     public function getFilesByName(): array
     {
-        return ['*.css', '*.js'];
+        return ['*.css', '*.js', '*.map'];
     }
 
     public function copyFiles(): void
@@ -66,29 +66,51 @@ class ChartJs extends AbstractPlugin
             return;
         }
         $filesystem = new Filesystem();
-        $fileName   = 'Chart.min.js';
-        $filePath   = $this->getVendorDirectory() . '/' . $vendorName . '/dist/' . $fileName;
 
-        if (version_compare($version, self::MIN_NPM_VERSION, '>=') && !$filesystem->exists($filePath)) {
-            $distUrl = str_replace('{{version}}', $version, self::NPM_FALLBACK_URL);
-            $content = file_get_contents($distUrl);
+        $files = [
+            'Chart.min.js'      => [
+                'url'               => self::NPM_FALLBACK_URL . 'chart.umd.js',
+                'content_search'    => '//# sourceMappingURL=chart.umd.js.map',
+                'content_replace'   => '//# sourceMappingURL=Chart.js.map',
+            ],
+            'Chart.js.map'      => [
+                'url'               => self::NPM_FALLBACK_URL . 'chart.umd.js.map',
+                'content_search'    => '"file":"chart.umd.js"',
+                'content_replace'   => '"file":"Chart.min.js"',
+            ],
+        ];
 
-            $message = sprintf('Try to download Chart.js %s from %s', $version, $distUrl);
-            $this->event->getIO()->write($message);
+        $displayMessage = true;
 
-            if (!$content) {
-                $this->event->getIO()->write(sprintf('Could not read from %s', $distUrl));
-                return;
-            }
+        foreach ($files as $fileName => $fileInfo) {
+            $filePath   = $this->getVendorDirectory() . '/' . $vendorName . '/dist/' . $fileName;
 
-            try {
-                $filesystem->dumpFile($filePath, $content);
-                if ($this->event->getIO()->isVerbose()) {
-                    $this->event->getIO()->write(sprintf('Added %s', $fileName));
+            if (version_compare($version, self::MIN_NPM_VERSION, '>=') && !$filesystem->exists($filePath)) {
+                $distUrl = str_replace('{{version}}', $version, $fileInfo['url']);
+                $content = file_get_contents($distUrl);
+
+                if ($displayMessage) {
+                    $message = sprintf('Try to download Chart.js %s from %s', $version, $distUrl);
+                    $this->event->getIO()->write($message);
+                    $displayMessage = false;
                 }
-            } catch (IOException $IOException) {
-                $this->event->getIO()->write($IOException->getMessage());
-                return;
+
+                if (!$content) {
+                    $this->event->getIO()->write(sprintf('Could not read from %s', $distUrl));
+                    return;
+                }
+
+                $content = str_replace($fileInfo['content_search'], $fileInfo['content_replace'], $content);
+
+                try {
+                    $filesystem->dumpFile($filePath, $content);
+                    if ($this->event->getIO()->isVerbose()) {
+                        $this->event->getIO()->write(sprintf('Added %s', $fileName));
+                    }
+                } catch (IOException $IOException) {
+                    $this->event->getIO()->write($IOException->getMessage());
+                    return;
+                }
             }
         }
 
