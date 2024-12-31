@@ -41,7 +41,7 @@ class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\Composer\
 
     public function getCopyTarget(): string
     {
-        return 'js/tinymce/langs';
+        return 'js/lib/tinymce/langs';
     }
 
     public function getFilesByName(): array

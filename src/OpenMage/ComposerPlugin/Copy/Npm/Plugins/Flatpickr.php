@@ -39,6 +39,6 @@ class Flatpickr extends Copy\AbstractCopyPlugin implements Copy\Npm\PluginInterf
 
     public function getCopyTarget(): string
     {
-        return 'js/flatpickr';
+        return 'js/lib/flatpickr';
     }
 }

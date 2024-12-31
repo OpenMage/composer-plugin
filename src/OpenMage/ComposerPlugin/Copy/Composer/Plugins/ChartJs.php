@@ -51,7 +51,7 @@ class ChartJs extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInt
 
     public function getCopyTarget(): string
     {
-        return 'js/chartjs';
+        return 'js/lib/chartjs';
     }
 
     public function getFilesByName(): array

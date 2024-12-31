@@ -42,7 +42,7 @@ class TinyMce extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInt
 
     public function getCopyTarget(): string
     {
-        return 'js/tinymce';
+        return 'js/lib/tinymce';
     }
 
     public function getFilesByName(): array
