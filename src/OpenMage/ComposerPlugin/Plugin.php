@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer;
+namespace OpenMage\ComposerPlugin;
 
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
@@ -49,37 +49,65 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * @see EventSubscriberInterface::getSubscribedEvents
-     * @see processVendorCopy
+     * @see processCopyFromVendor
+     * @see processCopyFromNpm
      */
     public static function getSubscribedEvents(): array
     {
         return [
-            ScriptEvents::POST_INSTALL_CMD => [['processVendorCopy']],
-            ScriptEvents::POST_UPDATE_CMD  => [['processVendorCopy']],
+            ScriptEvents::POST_INSTALL_CMD => [
+                ['processCopyFromVendor'],
+                ['processCopyFromNpm'],
+            ],
+            ScriptEvents::POST_UPDATE_CMD  => [
+                ['processCopyFromVendor'],
+                ['processCopyFromNpm'],
+
+            ],
         ];
     }
 
-    public function processVendorCopy(Event $event): void
+    /**
+     * @see \OpenMage\ComposerPlugin\Copy\Composer\Plugins\ChartJs
+     * @see \OpenMage\ComposerPlugin\Copy\Composer\Plugins\JQuery
+     * @see \OpenMage\ComposerPlugin\Copy\Composer\Plugins\TinyMce
+     * @see \OpenMage\ComposerPlugin\Copy\Composer\Plugins\TinyMceLanguages
+     */
+    public function processCopyFromVendor(Event $event): void
     {
-        $plugins = $this->getPlugins(__DIR__ . '/VendorCopy/Plugins');
+        $plugins = $this->getPlugins(__DIR__ . '/Copy/Composer/Plugins');
         foreach ($plugins as $plugin) {
             $pluginLoaded = new $plugin($event);
-
-            if (!$pluginLoaded instanceof VendorCopy\PluginInterface) {
+            if (!$pluginLoaded instanceof Copy\Composer\PluginInterface) {
                 $this->io->write('Could not load ' . $plugin);
-                return;
+                continue;
             }
+            $pluginLoaded->processComposerInstall();
+        }
+    }
 
-            $pluginLoaded->copyFiles();
+    /**
+     * @see \OpenMage\ComposerPlugin\Copy\Npm\Plugins\Flatpickr
+     */
+    public function processCopyFromNpm(Event $event): void
+    {
+        $plugins = $this->getPlugins(__DIR__ . '/Copy/Npm/Plugins');
+        foreach ($plugins as $plugin) {
+            $pluginLoaded = new $plugin($event);
+            if (!$pluginLoaded instanceof Copy\Npm\PluginInterface) {
+                $this->io->write('Could not load ' . $plugin);
+                continue;
+            }
+            $pluginLoaded->processNpmInstall();
         }
     }
 
     /**
      * @return string[]
      */
-    public function getPlugins(string $path): array
+    private function getPlugins(string $path): array
     {
-        $filenames = $this->getFilenames($path);
+        $filenames  = $this->getFilenames($path);
         $namespaces = [];
         foreach ($filenames as $filename) {
             $namespaces[] = $this->getFullNamespace($filename) . '\\' . $this->getClassName($filename);

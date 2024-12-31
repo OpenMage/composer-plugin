@@ -15,34 +15,16 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\VendorCopy;
+namespace OpenMage\ComposerPlugin\Copy;
 
 /**
- * VendorCopyInterface interface
+ * PluginInterface
  */
-interface PluginInterface
+interface CopyInterface
 {
-    /**
-     * Composer vendor/name
-     */
-    public function getComposerPackageName(): string;
+    public const EXTRA_MAGENTO_ROOT_DIR = 'magento-root-dir';
+    public const EXTRA_NPM_PACKAGES     = 'magento-npm-packages';
+    public const VENDOR_DIR             = 'vendor-dir';
 
-    /**
-     * Path to source files inside vendor directory
-     */
-    public function getCopySource(): string;
-
-    /**
-     * Path to copy target
-     */
     public function getCopyTarget(): string;
-
-    /**
-     * Filename patternst to copy
-     *
-     * @return string[]
-     */
-    public function getFilesByName(): array;
-
-    public function copyFiles(): void;
 }

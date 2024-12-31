@@ -15,21 +15,24 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\VendorCopy;
+namespace OpenMage\ComposerPlugin\Copy\Npm;
 
 /**
- * VendorCopyInterface interface
+ * PluginInterface
  */
-interface PluginNpmInterface
+interface PluginInterface
 {
-    public const NPM_FALLBACK_URL = 'https://unpkg.com/browse/{{flatpickr}}@{{version}}/dist/';
+    public const NPM_FALLBACK_URL = 'https://unpkg.com/browse/{{package}}@{{version}}/dist/';
 
     /**
-     * NPM package name
+     * Npm name
      */
     public function getNpmPackageName(): string;
 
+    /**
+     * @return string[]
+     */
     public function getNpmPackageFiles(): array;
 
-    public function downloadNpmFiles(): void;
+    public function processNpmInstall(): void;
 }

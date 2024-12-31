@@ -29,6 +29,6 @@
 		"composer/composer": "^2.7"
 	},
 	"extra": {
-		"class": "OpenMage\\Composer\\Plugin"
+		"class": "OpenMage\\ComposerPlugin\\Plugin"
 	}
 }

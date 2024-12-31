@@ -15,17 +15,17 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\Composer\VendorCopy\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Composer\Plugins;
 
 use Composer\Package\BasePackage;
-use OpenMage\Composer\VendorCopy\AbstractPlugin;
-use Symfony\Component\Filesystem\Filesystem;
+use OpenMage\ComposerPlugin\Copy;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class TinyMce
  */
-class TinyMce extends AbstractPlugin
+class TinyMce extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInterface
 {
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
@@ -50,9 +50,9 @@ class TinyMce extends AbstractPlugin
         return ['*.css', '*.js'];
     }
 
-    public function copyFiles(): void
+    public function processComposerInstall(): void
     {
-        $package = $this->getPackage();
+        $package = $this->getComposerPackage();
         if (!$package instanceof BasePackage) {
             return;
         }
@@ -68,7 +68,7 @@ class TinyMce extends AbstractPlugin
                 break;
         }
 
-        parent::copyFiles();
+        parent::processComposerInstall();
     }
 
     private function addTinyMceLicenseFile(): void
@@ -84,7 +84,7 @@ TEXT;
         $filesystem = new Filesystem();
 
         try {
-            $filesystem->dumpFile($this->getRootDirectory() . '/' . self::TINYMCE_LICENSE_FILE, $content);
+            $filesystem->dumpFile($this->getCwd() . '/' . self::TINYMCE_LICENSE_FILE, $content);
             if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_FILE));
             }
@@ -105,7 +105,14 @@ TEXT;
         $filesystem = new Filesystem();
 
         try {
-            $filesystem->dumpFile($this->getVendorDirectory() . '/' . $this->getComposerPackageName() . '/' . self::TINYMCE_LICENSE_NOTE, $content);
+            $filePath = sprintf(
+                '%s/%s/%s',
+                $this->getVendorDirectoryFromComposer(),
+                $this->getComposerPackageName(),
+                self::TINYMCE_LICENSE_NOTE,
+            );
+
+            $filesystem->dumpFile($filePath, $content);
             if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_NOTE));
             }
@@ -117,7 +124,7 @@ TEXT;
     private function removedTinyMceLicenseFiles(): void
     {
         $files = [
-            $this->getRootDirectory() . '/' . self::TINYMCE_LICENSE_FILE,
+            $this->getCwd() . '/' . self::TINYMCE_LICENSE_FILE,
             $this->getCopySource() . '/' . self::TINYMCE_LICENSE_NOTE,
         ];
 
