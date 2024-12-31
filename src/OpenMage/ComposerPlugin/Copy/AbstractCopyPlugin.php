@@ -32,17 +32,27 @@ use Symfony\Component\Finder\Finder;
 abstract class AbstractCopyPlugin implements CopyInterface
 {
     /**
+     * Packages installed via composer
+     *
      * @var BasePackage[]
      */
     public array $installedComposerPackages = [];
 
     /**
+     * Packages installad via NPM downloadd
+     *
      * @var array<string, array<string, string>>
      */
     public array $installedNpmPackages = [];
 
+    /**
+     * Package version
+     */
     public ?string $version = null;
 
+    /**
+     * Composer event
+     */
     protected Event $event;
 
     public function __construct(Event $event)
@@ -50,6 +60,11 @@ abstract class AbstractCopyPlugin implements CopyInterface
         $this->event = $event;
     }
 
+    /**
+     * Copy files as defined in composer copy-plugin
+     *
+     * Fallback to NPM download if configured
+     */
     public function processComposerInstall(): void
     {
         $copySourcePath = null;
@@ -93,6 +108,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         }
     }
 
+    /**
+     * Copy files as defined in NPM copy-plugin
+     */
     public function processNpmInstall(): void
     {
         if ($this instanceof Npm\PluginInterface) {
@@ -206,6 +224,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return null;
     }
 
+    /**
+     * Get path to NPM dist
+     */
     protected function getNpmFilePath(): string
     {
         if ($this instanceof Npm\PluginInterface) {
@@ -216,6 +237,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return '';
     }
 
+    /**
+     * Get package version
+     */
     private function getVersion(): string
     {
         if (is_null($this->version)) {
@@ -237,6 +261,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $this->version;
     }
 
+    /**
+     * Get current working directory
+     */
     protected function getCwd(): string
     {
         $cwd = getcwd();
@@ -246,6 +273,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $cwd;
     }
 
+    /**
+     * Get composer vendor directory
+     */
     protected function getVendorDirectoryFromComposer(): string
     {
         /** @var string $vendorDir */
@@ -253,12 +283,17 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $vendorDir;
     }
 
+    /**
+     * Get openmage composer install directory
+     */
     protected function getMageRootDirectoryFromComposer(): string
     {
         $composerExtra  = $this->event->getComposer()->getPackage()->getExtra();
         $magentoRootDir = '';
 
-        if (array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $composerExtra) && $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.') {
+        if (array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $composerExtra) &&
+            $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.'
+        ) {
             $magentoRootDir = $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] . '/';
         }
         return $magentoRootDir;
