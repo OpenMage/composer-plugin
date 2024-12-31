@@ -22,7 +22,7 @@ namespace OpenMage\ComposerPlugin\Copy\Npm;
  */
 interface PluginInterface
 {
-    public const NPM_FALLBACK_URL = 'https://unpkg.com/browse/{{package}}@{{version}}/dist/';
+    public const NPM_FALLBACK_URL = 'https://unpkg.com/{{package}}@{{version}}/dist/';
 
     /**
      * Npm name
