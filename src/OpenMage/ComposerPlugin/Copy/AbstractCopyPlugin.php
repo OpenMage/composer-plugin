@@ -20,8 +20,6 @@ namespace OpenMage\ComposerPlugin\Copy;
 use Composer\Package\BasePackage;
 use Composer\Script\Event;
 use Exception;
-use OpenMage\ComposerPlugin\Copy\Composer as Composer;
-use OpenMage\ComposerPlugin\Copy\Npm as Npm;
 use Symfony\Component\Filesystem\Exception\IOException;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Finder\Finder;
@@ -68,7 +66,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public function processComposerInstall(): void
     {
         $copySourcePath = null;
-        if ($this instanceof Composer\PluginInterface) {
+        if ($this instanceof CopyFromComposerInterface) {
             $package = $this->getComposerPackage();
             if (!$package) {
                 return;
@@ -78,7 +76,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
         $filesystem  = new Filesystem();
 
-        if ($this instanceof Npm\PluginInterface && (!$copySourcePath || !$filesystem->exists($copySourcePath))) {
+        if ($this instanceof CopyFromNpmInterface && (!$copySourcePath || !$filesystem->exists($copySourcePath))) {
             if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Fallback to NPM for %s', $this->getNpmPackageName()));
             }
@@ -86,7 +84,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
             return;
         }
 
-        if ($copySourcePath && $this instanceof Composer\PluginInterface) {
+        if ($copySourcePath && $this instanceof CopyFromComposerInterface) {
             $finder = Finder::create()
                 ->files()
                 ->in($copySourcePath)
@@ -113,8 +111,11 @@ abstract class AbstractCopyPlugin implements CopyInterface
      */
     public function processNpmInstall(): void
     {
-        if ($this instanceof Npm\PluginInterface) {
-            $filesystem = new Filesystem();
+        if ($this instanceof CopyFromNpmInterface) {
+            if (!$this->getVersion()) {
+                return;
+            }
+
             $sourcePath = $this->getNpmFilePath();
 
             if ($this->event->getIO()->isVerbose()) {
@@ -134,7 +135,6 @@ abstract class AbstractCopyPlugin implements CopyInterface
                     $this->event->getIO()->write($errorException->getMessage());
                     return;
                 }
-                $content = file_get_contents($sourceFilePath);
 
                 if (!$content) {
                     $this->event->getIO()->write(sprintf('Could not read from %s', $sourceFilePath));
@@ -142,6 +142,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
                 }
 
                 try {
+                    $filesystem = new Filesystem();
                     $targetFilePath = $this->getCopyTargetPath() . '/' . $fileName;
                     $filesystem->dumpFile($targetFilePath, $content);
                     if ($this->event->getIO()->isVerbose()) {
@@ -157,7 +158,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
     public function getComposerPackage(): ?BasePackage
     {
-        if ($this instanceof Composer\PluginInterface) {
+        if ($this instanceof CopyFromComposerInterface) {
             $vendorName = $this->getComposerPackageName();
             $module = $this->getInstalledComposerPackage($vendorName);
             if ($module) {
@@ -185,7 +186,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
      */
     public function getNpmPackage(): ?array
     {
-        if ($this instanceof Npm\PluginInterface) {
+        if ($this instanceof CopyFromNpmInterface) {
             $vendorName = $this->getNpmPackageName();
 
             $locker = $this->event->getComposer()->getLocker();
@@ -229,10 +230,10 @@ abstract class AbstractCopyPlugin implements CopyInterface
      */
     protected function getNpmFilePath(): string
     {
-        if ($this instanceof Npm\PluginInterface) {
+        if ($this instanceof CopyFromNpmInterface) {
             $search  = ['{{package}}', '{{version}}'];
             $replace = [$this->getNpmPackageName(), $this->getVersion()];
-            return str_replace($search, $replace, Npm\PluginInterface::NPM_FALLBACK_URL);
+            return str_replace($search, $replace, CopyFromNpmInterface::NPM_FALLBACK_URL);
         }
         return '';
     }
@@ -245,11 +246,11 @@ abstract class AbstractCopyPlugin implements CopyInterface
         if (is_null($this->version)) {
             $version = '';
             switch (true) {
-                case $this instanceof Composer\PluginInterface:
+                case $this instanceof CopyFromComposerInterface:
                     $package = $this->getComposerPackage();
                     $version = $package ? $package->getPrettyVersion() : '';
                     break;
-                case $this instanceof Npm\PluginInterface:
+                case $this instanceof CopyFromNpmInterface:
                     $package = $this->getNpmPackage();
                     $version = $package ? $package['version'] : '';
                     break;
@@ -301,7 +302,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
     protected function getCopySourcePath(): string
     {
-        if ($this instanceof Composer\PluginInterface) {
+        if ($this instanceof CopyFromComposerInterface) {
             return sprintf(
                 '%s/%s/%s',
                 $this->getVendorDirectoryFromComposer(),

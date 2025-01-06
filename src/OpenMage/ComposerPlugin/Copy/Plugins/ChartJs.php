@@ -15,45 +15,47 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Composer\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
-use Composer\InstalledVersions;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
- * Class TinyMceLanguages
+ * Class JQuery
  */
-class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInterface
+class ChartJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface, Copy\CopyFromNpmInterface
 {
-    public const TINYMCE = 'tinymce/tinymce';
+    public function getNpmPackageName(): string
+    {
+        return 'chart.js';
+    }
+
+    public function getNpmPackageFiles(): array
+    {
+        return [
+            'chart.umd.js',
+            'chart.umd.js.map',
+            'helpers.js',
+            'helpers.js.map',
+        ];
+    }
 
     public function getComposerPackageName(): string
     {
-        return 'mklkj/tinymce-i18n';
+        return 'nnnick/chartjs';
     }
 
     public function getCopySource(): string
     {
-        /** @var string $version */
-        $version = InstalledVersions::getVersion(self::TINYMCE);
-        return 'langs' . $version[0];
+        return 'dist';
     }
 
     public function getCopyTarget(): string
     {
-        return 'js/lib/tinymce/langs';
+        return 'js/lib/chartjs';
     }
 
     public function getFilesByName(): array
     {
-        return ['*.css', '*.js'];
-    }
-
-    public function processComposerInstall(): void
-    {
-        if (!InstalledVersions::isInstalled(self::TINYMCE)) {
-            return;
-        }
-        parent::processComposerInstall();
+        return ['*.js', '*.map'];
     }
 }

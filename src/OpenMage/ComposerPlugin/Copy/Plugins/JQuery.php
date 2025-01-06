@@ -15,30 +15,32 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Npm\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
 use OpenMage\ComposerPlugin\Copy;
 
 /**
- * Class Flatpickr
+ * Class JQuery
  */
-class Flatpickr extends Copy\AbstractCopyPlugin implements Copy\Npm\PluginInterface
+class JQuery extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
-    public function getNpmPackageName(): string
+    public function getComposerPackageName(): string
     {
-        return 'flatpickr';
+        return 'components/jquery';
     }
 
-    public function getNpmPackageFiles(): array
+    public function getCopySource(): string
     {
-        return [
-            'flatpickr.min.css',
-            'flatpickr.min.js',
-        ];
+        return '';
     }
 
     public function getCopyTarget(): string
     {
-        return 'js/lib/flatpickr';
+        return 'js/lib/jquery';
+    }
+
+    public function getFilesByName(): array
+    {
+        return ['*.map', '*.js'];
     }
 }

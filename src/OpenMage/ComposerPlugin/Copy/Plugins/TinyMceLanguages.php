@@ -15,32 +15,45 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Composer\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
+use Composer\InstalledVersions;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
- * Class JQuery
+ * Class TinyMceLanguages
  */
-class JQuery extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInterface
+class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
+    public const TINYMCE = 'tinymce/tinymce';
+
     public function getComposerPackageName(): string
     {
-        return 'components/jquery';
+        return 'mklkj/tinymce-i18n';
     }
 
     public function getCopySource(): string
     {
-        return '';
+        /** @var string $version */
+        $version = InstalledVersions::getVersion(self::TINYMCE);
+        return 'langs' . $version[0];
     }
 
     public function getCopyTarget(): string
     {
-        return 'js/lib/jquery';
+        return 'js/lib/tinymce/langs';
     }
 
     public function getFilesByName(): array
     {
-        return ['*.map', '*.js'];
+        return ['*.css', '*.js'];
+    }
+
+    public function processComposerInstall(): void
+    {
+        if (!InstalledVersions::isInstalled(self::TINYMCE)) {
+            return;
+        }
+        parent::processComposerInstall();
     }
 }

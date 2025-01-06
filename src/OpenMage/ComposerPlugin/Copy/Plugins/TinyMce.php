@@ -15,7 +15,7 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Composer\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
 use Composer\Package\BasePackage;
 use OpenMage\ComposerPlugin\Copy;
@@ -25,7 +25,7 @@ use Symfony\Component\Filesystem\Filesystem;
 /**
  * Class TinyMce
  */
-class TinyMce extends Copy\AbstractCopyPlugin implements Copy\Composer\PluginInterface
+class TinyMce extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';

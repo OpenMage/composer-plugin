@@ -15,24 +15,24 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Npm;
+namespace OpenMage\ComposerPlugin\Copy;
 
 /**
  * PluginInterface
  */
-interface PluginInterface
+interface CopyFromComposerInterface
 {
-    public const NPM_FALLBACK_URL = 'https://unpkg.com/{{package}}@{{version}}/dist/';
-
     /**
      * Npm name
      */
-    public function getNpmPackageName(): string;
+    public function getComposerPackageName(): string;
+
+    public function getCopySource(): string;
 
     /**
      * @return string[]
      */
-    public function getNpmPackageFiles(): array;
+    public function getFilesByName(): array;
 
-    public function processNpmInstall(): void;
+    public function processComposerInstall(): void;
 }
