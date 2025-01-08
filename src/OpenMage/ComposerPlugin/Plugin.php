@@ -66,6 +66,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\ChartJs
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\Flatpickr
+     * @see \OpenMage\ComposerPlugin\Copy\Plugins\FlowJs
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\JQuery
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\TinyMce
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\TinyMceLanguages
