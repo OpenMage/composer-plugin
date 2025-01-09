@@ -30,5 +30,15 @@
 	},
 	"extra": {
 		"class": "OpenMage\\ComposerPlugin\\Plugin"
-	}
+	},
+	"funding": [
+		{
+			"type": "opencollective",
+			"url": "https://opencollective.com/openmage"
+		},
+		{
+			"type": "github",
+			"url": "https://github.com/sreichel"
+		}
+	]
 }
