@@ -11,19 +11,30 @@ declare(strict_types=1);
 
 namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
+use Composer\InstalledVersions;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
  * Class Flatpickr
  */
-class Flatpickr extends Copy\AbstractCopyPlugin implements Copy\CopyFromNpmInterface
+class Flatpickr extends Copy\AbstractCopyPlugin implements Copy\CopyFromUnpkgInterface
 {
-    public function getNpmPackageName(): string
+    public function getUnpkgName(): string
     {
         return 'flatpickr';
     }
 
-    public function getNpmPackageFiles(): array
+    public function getUnpkgVersion(): string
+    {
+        return '';
+    }
+
+    public function getUnpkgSource(): string
+    {
+        return 'dist';
+    }
+
+    public function getUnpkgFiles(): array
     {
         return [
             'flatpickr.min.css',

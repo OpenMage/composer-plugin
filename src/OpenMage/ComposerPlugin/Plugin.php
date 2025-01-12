@@ -70,12 +70,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $plugins = $this->getPlugins(__DIR__ . '/Copy/Plugins');
         foreach ($plugins as $plugin) {
             $pluginLoaded = new $plugin($event);
-            if ($pluginLoaded instanceof Copy\CopyFromComposerInterface) {
+            if ($pluginLoaded instanceof Copy\AbstractCopyPlugin &&
+                $pluginLoaded instanceof Copy\CopyFromComposerInterface
+            ) {
                 $pluginLoaded->processComposerInstall();
                 continue;
             }
-            if ($pluginLoaded instanceof Copy\CopyFromNpmInterface) {
-                $pluginLoaded->processNpmInstall();
+            if ($pluginLoaded instanceof Copy\AbstractCopyPlugin &&
+                $pluginLoaded instanceof Copy\CopyFromUnpkgInterface
+            ) {
+                $pluginLoaded->processUnpkgInstall();
                 continue;
             }
             $this->io->write('Could not load ' . $plugin);

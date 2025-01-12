@@ -18,23 +18,23 @@ use OpenMage\ComposerPlugin\Copy;
  */
 class FlowJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
-    public function getComposerPackageName(): string
+    public function getComposerName(): string
     {
         return 'flowjs/flowjs';
     }
 
-    public function getCopySource(): string
+    public function getComposerSource(): string
     {
         return 'dist';
+    }
+
+    public function getComposerFiles(): array
+    {
+        return ['*.js'];
     }
 
     public function getCopyTarget(): string
     {
         return 'js/lib/uploader';
-    }
-
-    public function getFilesByName(): array
-    {
-        return ['*.js'];
     }
 }

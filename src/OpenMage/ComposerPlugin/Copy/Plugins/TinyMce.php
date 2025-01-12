@@ -24,24 +24,24 @@ class TinyMce extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerIn
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
 
-    public function getComposerPackageName(): string
+    public function getComposerName(): string
     {
         return 'tinymce/tinymce';
     }
 
-    public function getCopySource(): string
+    public function getComposerSource(): string
     {
         return '';
+    }
+
+    public function getComposerFiles(): array
+    {
+        return ['*.css', '*.js'];
     }
 
     public function getCopyTarget(): string
     {
         return 'js/lib/tinymce';
-    }
-
-    public function getFilesByName(): array
-    {
-        return ['*.css', '*.js'];
     }
 
     public function processComposerInstall(): void
@@ -102,7 +102,7 @@ TEXT;
             $filePath = sprintf(
                 '%s/%s/%s',
                 $this->getVendorDirectoryFromComposer(),
-                $this->getComposerPackageName(),
+                $this->getComposerName(),
                 self::TINYMCE_LICENSE_NOTE,
             );
 
@@ -119,7 +119,7 @@ TEXT;
     {
         $files = [
             $this->getCwd() . '/' . self::TINYMCE_LICENSE_FILE,
-            $this->getCopySource() . '/' . self::TINYMCE_LICENSE_NOTE,
+            $this->getComposerSource() . '/' . self::TINYMCE_LICENSE_NOTE,
         ];
 
         $filesystem = new Filesystem();

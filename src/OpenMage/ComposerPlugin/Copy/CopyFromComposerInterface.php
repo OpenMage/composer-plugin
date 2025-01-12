@@ -19,14 +19,12 @@ interface CopyFromComposerInterface
     /**
      * Npm name
      */
-    public function getComposerPackageName(): string;
+    public function getComposerName(): string;
 
-    public function getCopySource(): string;
+    public function getComposerSource(): string;
 
     /**
      * @return string[]
      */
-    public function getFilesByName(): array;
-
-    public function processComposerInstall(): void;
+    public function getComposerFiles(): array;
 }
