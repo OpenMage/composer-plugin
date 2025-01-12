@@ -147,7 +147,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
                 $targetFilePath = $this->getCopyTargetPath() . '/' . $fileName;
                 $filesystem->dumpFile($targetFilePath, $content);
                 if ($this->event->getIO()->isVerbose()) {
-                    $this->event->getIO()->write(sprintf('Added %s', $fileName));
+                    $this->event->getIO()->write(sprintf('Added %s', $targetFilePath));
                 }
             } catch (IOException $IOException) {
                 $this->event->getIO()->write($IOException->getMessage());
@@ -190,7 +190,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
             $search  = ['{{package}}', '{{version}}'];
             $replace = [$this->getUnpkgName(), $this->getUnpkgVersion()];
             $path    = str_replace($search, $replace, CopyFromUnpkgInterface::UNPKG_URL);
-            return $path . $this->getUnpkgSource() . '/';
+            return $path . ($this->getUnpkgSource() ? $this->getUnpkgSource() . '/' : '');
         }
         return '';
     }
