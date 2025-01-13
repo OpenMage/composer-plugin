@@ -35,7 +35,7 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        $this->assertSame('mklkj/tinymce-i18n', $this->subject->getComposerName());
+        static::assertSame('mklkj/tinymce-i18n', $this->subject->getComposerName());
     }
 
     /**
@@ -44,9 +44,9 @@ class TinyMceLanguagesTest extends TestCase
     public function testGetComposerSource(): void
     {
         try {
-            $this->assertSame('langs7', $this->subject->getComposerSource());
+            static::assertSame('langs7', $this->subject->getComposerSource());
         } catch (OutOfBoundsException $exception) {
-            $this->assertSame('Package "tinymce/tinymce" is not installed', $exception->getMessage());
+            static::assertSame('Package "tinymce/tinymce" is not installed', $exception->getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        $this->assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
+        static::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -63,6 +63,6 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/tinymce/langs', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/tinymce/langs', $this->subject->getCopyTarget());
     }
 }

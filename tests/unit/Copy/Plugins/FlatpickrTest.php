@@ -35,7 +35,7 @@ class FlatpickrTest extends TestCase
      */
     public function testGetUnpkgName(): void
     {
-        $this->assertSame('flatpickr', $this->subject->getUnpkgName());
+        static::assertSame('flatpickr', $this->subject->getUnpkgName());
     }
 
     /**
@@ -44,9 +44,9 @@ class FlatpickrTest extends TestCase
     public function testGetUnpkgVersion(): void
     {
         try {
-            $this->assertIsString($this->subject->getUnpkgVersion());
+            static::assertIsString($this->subject->getUnpkgVersion());
         } catch (OutOfBoundsException $exception) {
-            $this->assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
+            static::assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ class FlatpickrTest extends TestCase
      */
     public function testGetUnpkgSource(): void
     {
-        $this->assertSame('dist', $this->subject->getUnpkgSource());
+        static::assertSame('dist', $this->subject->getUnpkgSource());
     }
 
     /**
@@ -67,7 +67,7 @@ class FlatpickrTest extends TestCase
             0 => 'flatpickr.min.css',
             1 => 'flatpickr.min.js',
         ];
-        $this->assertSame($result, $this->subject->getUnpkgFiles());
+        static::assertSame($result, $this->subject->getUnpkgFiles());
     }
 
     /**
@@ -75,6 +75,6 @@ class FlatpickrTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/flatpickr', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/flatpickr', $this->subject->getCopyTarget());
     }
 }

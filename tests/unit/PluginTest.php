@@ -46,7 +46,7 @@ class PluginTest extends TestCase
                 ],
             ],
         ];
-        $this->assertSame($events, $this->subject->getSubscribedEvents());
+        static::assertSame($events, $this->subject->getSubscribedEvents());
     }
 
     /**
@@ -71,6 +71,6 @@ class PluginTest extends TestCase
      */
     public function testProcessCopy(): void
     {
-        $this->assertNull($this->subject->processCopy(null));
+        static::assertNull($this->subject->processCopy(null));
     }
 }

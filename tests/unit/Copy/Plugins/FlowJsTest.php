@@ -34,7 +34,7 @@ class FlowJsTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        $this->assertSame('flowjs/flowjs', $this->subject->getComposerName());
+        static::assertSame('flowjs/flowjs', $this->subject->getComposerName());
     }
 
     /**
@@ -42,7 +42,7 @@ class FlowJsTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        $this->assertSame('dist', $this->subject->getComposerSource());
+        static::assertSame('dist', $this->subject->getComposerSource());
     }
 
     /**
@@ -50,7 +50,7 @@ class FlowJsTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        $this->assertSame(['*.js'], $this->subject->getComposerFiles());
+        static::assertSame(['*.js'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -58,6 +58,6 @@ class FlowJsTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/uploader', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/uploader', $this->subject->getCopyTarget());
     }
 }

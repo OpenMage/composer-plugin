@@ -35,7 +35,7 @@ class ChartJsTest extends TestCase
      */
     public function testGetUnpkgName(): void
     {
-        $this->assertSame('chart.js', $this->subject->getUnpkgName());
+        static::assertSame('chart.js', $this->subject->getUnpkgName());
     }
 
     /**
@@ -45,9 +45,9 @@ class ChartJsTest extends TestCase
     public function testGetUnpkgVersion(): void
     {
         try {
-            $this->assertIsString($this->subject->getUnpkgVersion());
+            static::assertIsString($this->subject->getUnpkgVersion());
         } catch (OutOfBoundsException $exception) {
-            $this->assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
+            static::assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
         }
     }
 
@@ -56,7 +56,7 @@ class ChartJsTest extends TestCase
      */
     public function testGetUnpkgSource(): void
     {
-        $this->assertSame('dist', $this->subject->getUnpkgSource());
+        static::assertSame('dist', $this->subject->getUnpkgSource());
     }
 
 
@@ -71,7 +71,7 @@ class ChartJsTest extends TestCase
             2 => 'helpers.js',
             3 => 'helpers.js.map',
         ];
-        $this->assertSame($result, $this->subject->getUnpkgFiles());
+        static::assertSame($result, $this->subject->getUnpkgFiles());
     }
 
     /**
@@ -79,7 +79,7 @@ class ChartJsTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        $this->assertSame('nnnick/chartjs', $this->subject->getComposerName());
+        static::assertSame('nnnick/chartjs', $this->subject->getComposerName());
     }
 
     /**
@@ -87,7 +87,7 @@ class ChartJsTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        $this->assertSame('dist', $this->subject->getComposerSource());
+        static::assertSame('dist', $this->subject->getComposerSource());
     }
 
     /**
@@ -95,7 +95,7 @@ class ChartJsTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        $this->assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
+        static::assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -103,6 +103,6 @@ class ChartJsTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/chartjs', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/chartjs', $this->subject->getCopyTarget());
     }
 }
