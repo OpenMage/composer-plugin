@@ -9,41 +9,47 @@
 
 declare(strict_types=1);
 
-namespace OpenMage\ComposerPlugin\Copy\Plugins;
+namespace OpenMage\ComposerPlugin\Copy\Unpkg;
 
-use Composer\InstalledVersions;
+use Composer\Script\Event;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
- * Class Flatpickr
+ * Class Npm
  */
-class Flatpickr extends Copy\AbstractCopyPlugin implements Copy\CopyFromUnpkgInterface
+class Generic extends Copy\AbstractCopyPlugin implements Copy\CopyFromUnpkgInterface
 {
+    private Config $config;
+
+    public function __construct(Event $event, Config $config)
+    {
+        $this->config = $config;
+
+        parent::__construct($event);
+    }
+
     public function getUnpkgName(): string
     {
-        return 'flatpickr';
+        return $this->config->getUnpkgName();
     }
 
     public function getUnpkgVersion(): string
     {
-        return '';
+        return $this->config->getUnpkgVersion();
     }
 
     public function getUnpkgSource(): string
     {
-        return 'dist';
+        return $this->config->getUnpkgSource();
     }
 
     public function getUnpkgFiles(): array
     {
-        return [
-            'flatpickr.min.css',
-            'flatpickr.min.js',
-        ];
+        return $this->config->getUnpkgFiles();
     }
 
     public function getCopyTarget(): string
     {
-        return 'js/lib/flatpickr';
+        return $this->config->getCopyTarget();
     }
 }

@@ -21,26 +21,26 @@ class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\CopyFromC
 {
     public const TINYMCE = 'tinymce/tinymce';
 
-    public function getComposerPackageName(): string
+    public function getComposerName(): string
     {
         return 'mklkj/tinymce-i18n';
     }
 
-    public function getCopySource(): string
+    public function getComposerSource(): string
     {
         /** @var string $version */
         $version = InstalledVersions::getVersion(self::TINYMCE);
         return 'langs' . $version[0];
     }
 
+    public function getComposerFiles(): array
+    {
+        return ['*.css', '*.js'];
+    }
+
     public function getCopyTarget(): string
     {
         return 'js/lib/tinymce/langs';
-    }
-
-    public function getFilesByName(): array
-    {
-        return ['*.css', '*.js'];
     }
 
     public function processComposerInstall(): void

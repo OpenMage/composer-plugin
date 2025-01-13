@@ -14,19 +14,21 @@ namespace OpenMage\ComposerPlugin\Copy;
 /**
  * PluginInterface
  */
-interface CopyFromNpmInterface
+interface CopyFromUnpkgInterface
 {
-    public const NPM_FALLBACK_URL = 'https://unpkg.com/{{package}}@{{version}}/dist/';
+    public const UNPKG_URL = 'https://unpkg.com/{{package}}@{{version}}/';
 
     /**
      * Npm name
      */
-    public function getNpmPackageName(): string;
+    public function getUnpkgName(): string;
+
+    public function getUnpkgVersion(): string;
+
+    public function getUnpkgSource(): string;
 
     /**
      * @return string[]
      */
-    public function getNpmPackageFiles(): array;
-
-    public function processNpmInstall(): void;
+    public function getUnpkgFiles(): array;
 }

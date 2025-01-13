@@ -18,23 +18,23 @@ use OpenMage\ComposerPlugin\Copy;
  */
 class JQuery extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
-    public function getComposerPackageName(): string
+    public function getComposerName(): string
     {
         return 'components/jquery';
     }
 
-    public function getCopySource(): string
+    public function getComposerSource(): string
     {
         return '';
+    }
+
+    public function getComposerFiles(): array
+    {
+        return ['*.map', '*.js'];
     }
 
     public function getCopyTarget(): string
     {
         return 'js/lib/jquery';
-    }
-
-    public function getFilesByName(): array
-    {
-        return ['*.map', '*.js'];
     }
 }

@@ -17,7 +17,7 @@ namespace OpenMage\ComposerPlugin\Copy;
 interface CopyInterface
 {
     public const EXTRA_MAGENTO_ROOT_DIR = 'magento-root-dir';
-    public const EXTRA_NPM_PACKAGES     = 'magento-npm-packages';
+    public const EXTRA_UNPKG_PACKAGES   = 'openmage-unpkg-packages';
     public const VENDOR_DIR             = 'vendor-dir';
 
     public function getCopyTarget(): string;

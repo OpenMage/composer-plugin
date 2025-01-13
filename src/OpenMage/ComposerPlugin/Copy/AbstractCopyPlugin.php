@@ -31,16 +31,11 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public array $installedComposerPackages = [];
 
     /**
-     * Packages installad via NPM downloadd
+     * Packages installad via Unpkg downloadd
      *
      * @var array<string, array<string, string>>
      */
-    public array $installedNpmPackages = [];
-
-    /**
-     * Package version
-     */
-    public ?string $version = null;
+    public array $installedUnpkgPackages = [];
 
     /**
      * Composer event
@@ -59,93 +54,104 @@ abstract class AbstractCopyPlugin implements CopyInterface
      */
     public function processComposerInstall(): void
     {
-        $copySourcePath = null;
-        if ($this instanceof CopyFromComposerInterface) {
-            $package = $this->getComposerPackage();
-            if (!$package) {
-                return;
-            }
-            $copySourcePath = $this->getCopySourcePath();
-        }
-
-        $filesystem  = new Filesystem();
-
-        if ($this instanceof CopyFromNpmInterface && (!$copySourcePath || !$filesystem->exists($copySourcePath))) {
-            if ($this->event->getIO()->isVerbose()) {
-                $this->event->getIO()->write(sprintf('Fallback to NPM for %s', $this->getNpmPackageName()));
-            }
-            $this->processNpmInstall();
+        if (!$this instanceof CopyFromComposerInterface) {
             return;
         }
 
-        if ($copySourcePath && $this instanceof CopyFromComposerInterface) {
-            $finder = Finder::create()
-                ->files()
-                ->in($copySourcePath)
-                ->name($this->getFilesByName());
+        $package = $this->getComposerPackage();
+        if (!$package) {
+            return;
+        }
 
-            foreach ($finder as $file) {
-                $copySource = $file->getPathname();
-                $copytarget = $this->getCopyTargetPath() . '/' . $file->getRelativePathname();
+        $copySourcePath = sprintf(
+            '%s/%s/%s',
+            $this->getVendorDirectoryFromComposer(),
+            $this->getComposerName(),
+            $this->getComposerSource(),
+        );
 
-                try {
-                    $filesystem->copy($copySource, $copytarget);
-                    if ($this->event->getIO()->isVeryVerbose()) {
-                        $this->event->getIO()->write(sprintf('Copy %s to %s', $copySource, $copytarget));
-                    }
-                } catch (IOException $IOException) {
-                    $this->event->getIO()->write($IOException->getMessage());
+        $filesystem  = new Filesystem();
+
+        if (!$filesystem->exists($copySourcePath) && $this instanceof CopyFromUnpkgInterface) {
+            if ($this->event->getIO()->isVerbose()) {
+                $this->event->getIO()->write(sprintf(
+                    'Fallback to Unpkg %s for %s',
+                    $this->getUnpkgName(),
+                    $this->getComposerName(),
+                ));
+            }
+            $this->processUnpkgInstall();
+            return;
+        }
+
+        $finder = Finder::create()
+            ->files()
+            ->in($copySourcePath)
+            ->name($this->getComposerFiles());
+
+        foreach ($finder as $file) {
+            $copySource = $file->getPathname();
+            $copytarget = $this->getCopyTargetPath() . '/' . $file->getRelativePathname();
+
+            try {
+                $filesystem->copy($copySource, $copytarget);
+                if ($this->event->getIO()->isVeryVerbose()) {
+                    $this->event->getIO()->write(sprintf('Copy %s to %s', $copySource, $copytarget));
                 }
+            } catch (IOException $IOException) {
+                $this->event->getIO()->write($IOException->getMessage());
             }
         }
     }
 
     /**
-     * Copy files as defined in NPM copy-plugin
+     * Copy files as defined in Unpkg copy-plugin
      */
-    public function processNpmInstall(): void
+    public function processUnpkgInstall(): void
     {
-        if ($this instanceof CopyFromNpmInterface) {
-            if (!$this->getVersion()) {
+        if (!$this instanceof CopyFromUnpkgInterface) {
+            return;
+        }
+
+        if (!$this->getUnpkgVersion()) {
+            return;
+        }
+
+        $sourcePath = $this->getUnpkSourcePath();
+
+        if ($this->event->getIO()->isVerbose()) {
+            $this->event->getIO()->write(sprintf(
+                'Trying to download %s %s from %s',
+                $this->getUnpkgName(),
+                $this->getUnpkgVersion(),
+                $sourcePath,
+            ));
+        }
+
+        foreach ($this->getUnpkgFiles() as $fileName) {
+            $sourceFilePath = $sourcePath . $fileName;
+            try {
+                $content = file_get_contents($sourceFilePath);
+            } catch (\ErrorException $errorException) {
+                $this->event->getIO()->write($errorException->getMessage());
                 return;
             }
 
-            $sourcePath = $this->getNpmFilePath();
-
-            if ($this->event->getIO()->isVerbose()) {
-                $this->event->getIO()->write(sprintf(
-                    'Trying to download %s %s from %s',
-                    $this->getNpmPackageName(),
-                    $this->getVersion(),
-                    $sourcePath,
-                ));
+            if (!$content) {
+                $this->event->getIO()->write(sprintf('Could not read from %s', $sourceFilePath));
+                return;
             }
 
-            foreach ($this->getNpmPackageFiles() as $fileName) {
-                $sourceFilePath = $sourcePath . $fileName;
-                try {
-                    $content = file_get_contents($sourceFilePath);
-                } catch (\ErrorException $errorException) {
-                    $this->event->getIO()->write($errorException->getMessage());
-                    return;
+            try {
+                $filesystem = new Filesystem();
+                $targetFilePath = $this->getCopyTargetPath() . '/' . $fileName;
+                $filesystem->dumpFile($targetFilePath, $content);
+                if ($this->event->getIO()->isVerbose()) {
+                    $this->event->getIO()->write(sprintf('Added %s', $targetFilePath));
                 }
-
-                if (!$content) {
-                    $this->event->getIO()->write(sprintf('Could not read from %s', $sourceFilePath));
-                    return;
-                }
-
-                try {
-                    $filesystem = new Filesystem();
-                    $targetFilePath = $this->getCopyTargetPath() . '/' . $fileName;
-                    $filesystem->dumpFile($targetFilePath, $content);
-                    if ($this->event->getIO()->isVerbose()) {
-                        $this->event->getIO()->write(sprintf('Added %s', $fileName));
-                    }
-                } catch (IOException $IOException) {
-                    $this->event->getIO()->write($IOException->getMessage());
-                    return;
-                }
+            } catch (IOException $IOException) {
+                $this->event->getIO()->write($IOException->getMessage());
+                return;
             }
         }
     }
@@ -153,7 +159,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public function getComposerPackage(): ?BasePackage
     {
         if ($this instanceof CopyFromComposerInterface) {
-            $vendorName = $this->getComposerPackageName();
+            $vendorName = $this->getComposerName();
             $module = $this->getInstalledComposerPackage($vendorName);
             if ($module) {
                 return $module;
@@ -176,84 +182,17 @@ abstract class AbstractCopyPlugin implements CopyInterface
     }
 
     /**
-     * @return array<string, string>|null
-     */
-    public function getNpmPackage(): ?array
-    {
-        if ($this instanceof CopyFromNpmInterface) {
-            $vendorName = $this->getNpmPackageName();
-
-            $locker = $this->event->getComposer()->getLocker();
-            $repo   = $locker->getLockedRepository();
-
-            $packages   = $repo->getPackages();
-            $packages[] = $this->event->getComposer()->getPackage();
-
-            foreach ($packages as $package) {
-                /** @var array<string, string|array<string>> $extra */
-                $extra = $package->getExtra();
-
-                if (!isset($extra[self::EXTRA_NPM_PACKAGES][$vendorName])) {
-                    continue;
-                }
-
-                $packageData = $extra[self::EXTRA_NPM_PACKAGES][$vendorName];
-
-                if (!is_array($packageData)) {
-                    throw new Exception(sprintf('Configuration is invalid for %s', $vendorName));
-                }
-
-                if (array_key_exists('version', $packageData) && is_string($packageData['version'])) {
-                    $this->setInstalledNpmPackage($vendorName, $packageData);
-                    if ($this->event->getIO()->isVerbose()) {
-                        $this->event->getIO()->write(sprintf(
-                            '%s found with version %s',
-                            $vendorName,
-                            $packageData['version'],
-                        ));
-                    }
-                    return $this->getInstalledNpmPackage($vendorName);
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
      * Get path to NPM dist
      */
-    protected function getNpmFilePath(): string
+    protected function getUnpkSourcePath(): string
     {
-        if ($this instanceof CopyFromNpmInterface) {
+        if ($this instanceof CopyFromUnpkgInterface) {
             $search  = ['{{package}}', '{{version}}'];
-            $replace = [$this->getNpmPackageName(), $this->getVersion()];
-            return str_replace($search, $replace, CopyFromNpmInterface::NPM_FALLBACK_URL);
+            $replace = [$this->getUnpkgName(), $this->getUnpkgVersion()];
+            $path    = str_replace($search, $replace, CopyFromUnpkgInterface::UNPKG_URL);
+            return $path . ($this->getUnpkgSource() ? $this->getUnpkgSource() . '/' : '');
         }
         return '';
-    }
-
-    /**
-     * Get package version
-     */
-    private function getVersion(): string
-    {
-        if (is_null($this->version)) {
-            $version = '';
-            switch (true) {
-                case $this instanceof CopyFromComposerInterface:
-                    $package = $this->getComposerPackage();
-                    $version = $package ? $package->getPrettyVersion() : '';
-                    break;
-                case $this instanceof CopyFromNpmInterface:
-                    $package = $this->getNpmPackage();
-                    $version = $package ? $package['version'] : '';
-                    break;
-            }
-
-            $this->version = ltrim($version, 'v');
-        }
-
-        return $this->version;
     }
 
     /**
@@ -294,20 +233,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $magentoRootDir;
     }
 
-    protected function getCopySourcePath(): string
-    {
-        if ($this instanceof CopyFromComposerInterface) {
-            return sprintf(
-                '%s/%s/%s',
-                $this->getVendorDirectoryFromComposer(),
-                $this->getComposerPackageName(),
-                $this->getCopySource(),
-            );
-        }
-        return '';
-    }
-
-    protected function getCopyTargetPath(): string
+    private function getCopyTargetPath(): string
     {
         return sprintf(
             '%s/%s%s',
@@ -325,21 +251,5 @@ abstract class AbstractCopyPlugin implements CopyInterface
     private function setInstalledComposerPackage(string $vendorName, BasePackage $package): void
     {
         $this->installedComposerPackages[$vendorName] = $package;
-    }
-
-    /**
-     * @return array<string, string>|null
-     */
-    protected function getInstalledNpmPackage(string $vendorName): ?array
-    {
-        return $this->installedNpmPackages[$vendorName] ?? null;
-    }
-
-    /**
-     * @param array<string, string> $package
-     */
-    private function setInstalledNpmPackage(string $vendorName, array $package): void
-    {
-        $this->installedNpmPackages[$vendorName] = $package;
     }
 }

@@ -11,19 +11,32 @@ declare(strict_types=1);
 
 namespace OpenMage\ComposerPlugin\Copy\Plugins;
 
+use Composer\InstalledVersions;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
  * Class JQuery
  */
-class ChartJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface, Copy\CopyFromNpmInterface
+class ChartJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface, Copy\CopyFromUnpkgInterface
 {
-    public function getNpmPackageName(): string
+    public function getUnpkgName(): string
     {
         return 'chart.js';
     }
 
-    public function getNpmPackageFiles(): array
+    public function getUnpkgVersion(): string
+    {
+        /** @var string $version */
+        $version = InstalledVersions::getPrettyVersion($this->getComposerName());
+        return ltrim($version, 'v');
+    }
+
+    public function getUnpkgSource(): string
+    {
+        return 'dist';
+    }
+
+    public function getUnpkgFiles(): array
     {
         return [
             'chart.umd.js',
@@ -33,23 +46,23 @@ class ChartJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerIn
         ];
     }
 
-    public function getComposerPackageName(): string
+    public function getComposerName(): string
     {
         return 'nnnick/chartjs';
     }
 
-    public function getCopySource(): string
+    public function getComposerSource(): string
     {
         return 'dist';
+    }
+
+    public function getComposerFiles(): array
+    {
+        return ['*.js', '*.map'];
     }
 
     public function getCopyTarget(): string
     {
         return 'js/lib/chartjs';
-    }
-
-    public function getFilesByName(): array
-    {
-        return ['*.js', '*.map'];
     }
 }
