@@ -34,7 +34,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        $this->assertSame('tinymce/tinymce', $this->subject->getComposerName());
+        static::assertSame('tinymce/tinymce', $this->subject->getComposerName());
     }
 
     /**
@@ -42,7 +42,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        $this->assertSame('', $this->subject->getComposerSource());
+        static::assertSame('', $this->subject->getComposerSource());
     }
 
     /**
@@ -50,7 +50,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        $this->assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
+        static::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -58,6 +58,6 @@ class TinyMceTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/tinymce', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/tinymce', $this->subject->getCopyTarget());
     }
 }

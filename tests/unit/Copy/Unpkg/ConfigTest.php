@@ -36,7 +36,7 @@ class ConfigTest extends TestCase
      */
     public function testGetValidatedConfig(?array $expectedResult, $packageConfig): void
     {
-        $this->assertSame($expectedResult, $this->subject->getValidatedConfig($packageConfig));
+        static::assertSame($expectedResult, $this->subject->getValidatedConfig($packageConfig));
     }
 
     public function provideGetValidatedConfig(): Generator
@@ -152,7 +152,7 @@ class ConfigTest extends TestCase
     {
         $source = '';
         $this->subject->setUnpkgName($source);
-        $this->assertSame($source, $this->subject->getUnpkgName());
+        static::assertSame($source, $this->subject->getUnpkgName());
     }
 
     /**
@@ -163,7 +163,7 @@ class ConfigTest extends TestCase
     {
         $source = '';
         $this->subject->setUnpkgVersion($source);
-        $this->assertSame($source, $this->subject->getUnpkgVersion());
+        static::assertSame($source, $this->subject->getUnpkgVersion());
     }
 
     /**
@@ -174,7 +174,7 @@ class ConfigTest extends TestCase
     {
         $source = '';
         $this->subject->setUnpkgSource($source);
-        $this->assertSame($source, $this->subject->getUnpkgSource());
+        static::assertSame($source, $this->subject->getUnpkgSource());
     }
 
     /**
@@ -185,7 +185,7 @@ class ConfigTest extends TestCase
     {
         $target = '';
         $this->subject->setCopyTarget($target);
-        $this->assertSame($target, $this->subject->getCopyTarget());
+        static::assertSame($target, $this->subject->getCopyTarget());
     }
 
     /**
@@ -196,6 +196,6 @@ class ConfigTest extends TestCase
     {
         $files = [];
         $this->subject->setUnpkgFiles($files);
-        $this->assertSame($files, $this->subject->getUnpkgFiles());
+        static::assertSame($files, $this->subject->getUnpkgFiles());
     }
 }

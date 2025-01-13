@@ -34,7 +34,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        $this->assertSame('components/jquery', $this->subject->getComposerName());
+        static::assertSame('components/jquery', $this->subject->getComposerName());
     }
 
     /**
@@ -42,7 +42,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        $this->assertSame('', $this->subject->getComposerSource());
+        static::assertSame('', $this->subject->getComposerSource());
     }
 
     /**
@@ -50,7 +50,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        $this->assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
+        static::assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -58,6 +58,6 @@ class JQueryTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        $this->assertSame('js/lib/jquery', $this->subject->getCopyTarget());
+        static::assertSame('js/lib/jquery', $this->subject->getCopyTarget());
     }
 }
