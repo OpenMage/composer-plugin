@@ -43,32 +43,73 @@ class Config implements Copy\CopyFromUnpkgInterface
             return null;
         }
 
-        if (!array_key_exists(self::CONFIG_FILES, $packageConfig) || !is_array($packageConfig[self::CONFIG_FILES])) {
+        $files = $this->validateConfigFiles($packageConfig);
+        if (!$files) {
             return null;
         }
 
-        if (!array_key_exists(self::CONFIG_VERSION, $packageConfig) || !is_string($packageConfig[self::CONFIG_VERSION])) {
+        $version = $this->validateConfigVersion($packageConfig);
+        if (!$version) {
             return null;
         }
 
-        $source = '';
-        if (array_key_exists(self::CONFIG_SOURCE, $packageConfig) && is_string($packageConfig[self::CONFIG_SOURCE])) {
-            $source = $packageConfig[self::CONFIG_SOURCE];
-        }
+        $source = $this->validateConfigSource($packageConfig);
+        $target = $this->validateConfigTarget($packageConfig);
 
-        $target = '';
-        if (array_key_exists(self::CONFIG_TARGET, $packageConfig) && is_string($packageConfig[self::CONFIG_TARGET])) {
-            $target = $packageConfig[self::CONFIG_TARGET];
-        }
-
-        /** @var string[] $files */
-        $files = $packageConfig[self::CONFIG_FILES];
         return [
-            'version'   => $packageConfig[self::CONFIG_VERSION],
+            'version'   => $version,
             'source'    => $source,
             'target'    => $target,
             'files'     => $files,
         ];
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     * @return string[]|null
+     */
+    private function validateConfigFiles(array $packageConfig): ?array
+    {
+        if (array_key_exists(self::CONFIG_FILES, $packageConfig) && is_array($packageConfig[self::CONFIG_FILES])) {
+            /** @var string[] $files */
+            $files = $packageConfig[self::CONFIG_FILES];
+            return $files;
+        }
+        return null;
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     */
+    private function validateConfigVersion(array $packageConfig): ?string
+    {
+        if (array_key_exists(self::CONFIG_VERSION, $packageConfig) && is_string($packageConfig[self::CONFIG_VERSION])) {
+            return trim($packageConfig[self::CONFIG_VERSION]);
+        }
+        return null;
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     */
+    private function validateConfigSource(array $packageConfig): string
+    {
+        if (array_key_exists(self::CONFIG_SOURCE, $packageConfig) && is_string($packageConfig[self::CONFIG_SOURCE])) {
+            return trim($packageConfig[self::CONFIG_SOURCE]);
+        }
+        return '';
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     */
+    private function validateConfigTarget(array $packageConfig): string
+    {
+        if (array_key_exists(self::CONFIG_TARGET, $packageConfig) && is_string($packageConfig[self::CONFIG_TARGET])) {
+            $target = str_replace(['../', './'], '', $packageConfig[self::CONFIG_TARGET]);
+            return trim($target);
+        }
+        return '';
     }
 
     public function getUnpkgName(): string

@@ -27,11 +27,12 @@ use Symfony\Component\Finder\Finder;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    protected Composer $composer;
+    protected ?Composer $composer = null;
 
-    protected IOInterface $io;
+    protected ?IOInterface $io = null;
 
     /**
+     * @codeCoverageIgnore
      * @see PluginInterface::activate
      */
     public function activate(Composer $composer, IOInterface $io): void
@@ -40,8 +41,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io = $io;
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
     public function deactivate(Composer $composer, IOInterface $io): void {}
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
     public function uninstall(Composer $composer, IOInterface $io): void {}
 
     /**
@@ -68,7 +75,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\TinyMce
      * @see \OpenMage\ComposerPlugin\Copy\Plugins\TinyMceLanguages
      */
-    public function processCopy(Event $event): void
+    public function processCopy(?Event $event): void
     {
         $plugins = $this->getPlugins(__DIR__ . '/Copy/Plugins');
         foreach ($plugins as $plugin) {
@@ -85,7 +92,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $pluginLoaded->processUnpkgInstall();
                 continue;
             }
-            $this->io->write('Could not load ' . $plugin);
+
+            if ($this->io) {
+                $this->io->write('Could not load ' . $plugin);
+            }
         }
 
         $plugins = $this->getUnpkgPackagesFromConfig();
@@ -102,6 +112,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $packages = [];
 
+        if (is_null($this->composer)) {
+            return $packages;
+        }
+
         $extra = $this->composer->getPackage()->getExtra();
 
         if (!isset($extra[CopyInterface::EXTRA_UNPKG_PACKAGES])) {
@@ -111,7 +125,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $config = $extra[CopyInterface::EXTRA_UNPKG_PACKAGES];
 
         if (!is_array($config)) {
-            $this->io->write(sprintf('Configuration is invalid for %s', CopyInterface::EXTRA_UNPKG_PACKAGES));
+            if ($this->io) {
+                $this->io->write(sprintf('Configuration is invalid for %s', CopyInterface::EXTRA_UNPKG_PACKAGES));
+            }
             return $packages;
         }
 
@@ -119,7 +135,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $config = new Config();
             $packageConfig = $config->getValidatedConfig($packageConfig);
             if (!$packageConfig) {
-                $this->io->write(sprintf('Configuration is invalid for %s', $packageName));
+                if ($this->io) {
+                    $this->io->write(sprintf('Configuration is invalid for %s', $packageName));
+                }
                 continue;
             }
 
@@ -150,8 +168,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     private function getClassName(string $filename): string
     {
-        $directoriesAndFilename = explode('/', $filename);
-        $filename = array_pop($directoriesAndFilename);
+        $fullFilename = explode('/', $filename);
+        $filename = array_pop($fullFilename);
         $nameAndExtension = explode('.', $filename);
         return array_shift($nameAndExtension);
     }

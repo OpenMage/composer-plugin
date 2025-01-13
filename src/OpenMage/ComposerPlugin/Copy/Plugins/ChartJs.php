@@ -24,6 +24,9 @@ class ChartJs extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerIn
         return 'chart.js';
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.StaticAccess")
+     */
     public function getUnpkgVersion(): string
     {
         /** @var string $version */

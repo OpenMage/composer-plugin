@@ -30,7 +30,7 @@ class JQuery extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInt
 
     public function getComposerFiles(): array
     {
-        return ['*.map', '*.js'];
+        return ['*.js', '*.map'];
     }
 
     public function getCopyTarget(): string
