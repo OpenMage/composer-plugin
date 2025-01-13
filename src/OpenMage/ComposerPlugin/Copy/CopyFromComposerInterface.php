@@ -12,12 +12,12 @@ declare(strict_types=1);
 namespace OpenMage\ComposerPlugin\Copy;
 
 /**
- * PluginInterface
+ * CopyFromComposerInterface
  */
 interface CopyFromComposerInterface
 {
     /**
-     * Npm name
+     * Composer name
      */
     public function getComposerName(): string;
 

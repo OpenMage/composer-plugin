@@ -12,7 +12,7 @@ declare(strict_types=1);
 namespace OpenMage\ComposerPlugin\Copy;
 
 /**
- * PluginInterface
+ * CopyInterface
  */
 interface CopyInterface
 {

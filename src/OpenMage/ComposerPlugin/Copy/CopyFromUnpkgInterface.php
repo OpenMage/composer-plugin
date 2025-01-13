@@ -12,22 +12,30 @@ declare(strict_types=1);
 namespace OpenMage\ComposerPlugin\Copy;
 
 /**
- * PluginInterface
+ * CopyFromUnpkgInterface
  */
 interface CopyFromUnpkgInterface
 {
     public const UNPKG_URL = 'https://unpkg.com/{{package}}@{{version}}/';
 
     /**
-     * Npm name
+     * Unpkg name
      */
     public function getUnpkgName(): string;
 
+    /**
+     * Unpkg version
+     */
     public function getUnpkgVersion(): string;
 
+    /**
+     * Unpkg source
+     */
     public function getUnpkgSource(): string;
 
     /**
+     * Unpkg files
+     *
      * @return string[]
      */
     public function getUnpkgFiles(): array;

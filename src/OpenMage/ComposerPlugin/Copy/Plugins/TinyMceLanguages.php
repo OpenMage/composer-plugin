@@ -26,6 +26,9 @@ class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\CopyFromC
         return 'mklkj/tinymce-i18n';
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.StaticAccess")
+     */
     public function getComposerSource(): string
     {
         /** @var string $version */
@@ -43,6 +46,9 @@ class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\CopyFromC
         return 'js/lib/tinymce/langs';
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.StaticAccess")
+     */
     public function processComposerInstall(): void
     {
         if (!InstalledVersions::isInstalled(self::TINYMCE)) {

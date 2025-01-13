@@ -43,11 +43,11 @@ class Config implements Copy\CopyFromUnpkgInterface
             return null;
         }
 
-        if (!array_key_exists(self::CONFIG_FILES, $packageConfig) || !is_array($packageConfig[self::CONFIG_FILES])) {
+        if (!$this->validateConfigFiles($packageConfig)) {
             return null;
         }
 
-        if (!array_key_exists(self::CONFIG_VERSION, $packageConfig) || !is_string($packageConfig[self::CONFIG_VERSION])) {
+        if (!$this->validateConfigVersion($packageConfig)) {
             return null;
         }
 
@@ -69,6 +69,22 @@ class Config implements Copy\CopyFromUnpkgInterface
             'target'    => $target,
             'files'     => $files,
         ];
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     */
+    private function validateConfigFiles(array $packageConfig): bool
+    {
+        return array_key_exists(self::CONFIG_FILES, $packageConfig) && is_array($packageConfig[self::CONFIG_FILES]);
+    }
+
+    /**
+     * @param array<mixed> $packageConfig
+     */
+    private function validateConfigVersion(array $packageConfig): bool
+    {
+        return array_key_exists(self::CONFIG_VERSION, $packageConfig) && is_string($packageConfig[self::CONFIG_VERSION]);
     }
 
     public function getUnpkgName(): string
