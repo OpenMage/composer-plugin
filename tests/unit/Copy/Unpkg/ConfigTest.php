@@ -104,6 +104,44 @@ class ConfigTest extends TestCase
                 'target'    => 'target',
             ],
         ];
+
+        yield 'target sub-directory' => [
+            [
+                'version' => '1',
+                'source'  => 'source',
+                'target'  => 'target',
+                'files'   => [
+                    'test.file',
+                ],
+            ],
+            [
+                'files' => [
+                    'test.file',
+                ],
+                'version'   => '1',
+                'source'    => 'source',
+                'target'    => './../target',
+            ],
+        ];
+
+        yield 'target w/ spaces' => [
+            [
+                'version' => '1',
+                'source'  => 'source',
+                'target'  => 'target',
+                'files'   => [
+                    'test.file',
+                ],
+            ],
+            [
+                'files' => [
+                    'test.file',
+                ],
+                'version'   => '1',
+                'source'    => 'source',
+                'target'    => '  target  ',
+            ],
+        ];
     }
 
     /**
