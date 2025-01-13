@@ -1,0 +1,12 @@
+includes:
+    - phar://phpstan.phar/conf/bleedingEdge.neon
+parameters:
+    phpVersion:
+        min: 70400
+        max: 80499
+    fileExtensions:
+      - php
+    paths:
+        - src
+    tmpDir: .phpstan.cache
+    level: 9
