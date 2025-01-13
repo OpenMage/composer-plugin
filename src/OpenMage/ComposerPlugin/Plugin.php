@@ -117,7 +117,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         foreach ($config as $packageName => $packageConfig) {
             $config = new Config();
-            $packageConfig = $config->getValidatedConfig($packageName, $packageConfig);
+            $packageConfig = $config->getValidatedConfig($packageConfig);
             if (!$packageConfig) {
                 $this->io->write(sprintf('Configuration is invalid for %s', $packageName));
                 continue;

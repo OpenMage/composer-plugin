@@ -14,10 +14,15 @@ namespace OpenMage\ComposerPlugin\Copy\Unpkg;
 use OpenMage\ComposerPlugin\Copy;
 
 /**
- * Class Npm
+ * Class Config
  */
 class Config implements Copy\CopyFromUnpkgInterface
 {
+    public const CONFIG_FILES   = 'files';
+    public const CONFIG_SOURCE  = 'source';
+    public const CONFIG_TARGET  = 'target';
+    public const CONFIG_VERSION = 'version';
+
     private string $name    = '';
     private string $version = '';
     private string $source  = '';
@@ -32,34 +37,34 @@ class Config implements Copy\CopyFromUnpkgInterface
      * @param mixed $packageConfig
      * @return array{version: string, source: string, target: string, files: string[]}
      */
-    public function getValidatedConfig(string $packageName, $packageConfig): ?array
+    public function getValidatedConfig($packageConfig): ?array
     {
         if (!is_array($packageConfig)) {
             return null;
         }
 
-        if (!array_key_exists('files', $packageConfig) || !is_array($packageConfig['files'])) {
+        if (!array_key_exists(self::CONFIG_FILES, $packageConfig) || !is_array($packageConfig[self::CONFIG_FILES])) {
             return null;
         }
 
-        if (!array_key_exists('version', $packageConfig) || !is_string($packageConfig['version'])) {
+        if (!array_key_exists(self::CONFIG_VERSION, $packageConfig) || !is_string($packageConfig[self::CONFIG_VERSION])) {
             return null;
         }
 
         $source = '';
-        if (array_key_exists('source', $packageConfig) && is_string($packageConfig['source'])) {
-            $source = $packageConfig['source'];
+        if (array_key_exists(self::CONFIG_SOURCE, $packageConfig) && is_string($packageConfig[self::CONFIG_SOURCE])) {
+            $source = $packageConfig[self::CONFIG_SOURCE];
         }
 
         $target = '';
-        if (array_key_exists('target', $packageConfig) && is_string($packageConfig['target'])) {
-            $target = $packageConfig['target'];
+        if (array_key_exists(self::CONFIG_TARGET, $packageConfig) && is_string($packageConfig[self::CONFIG_TARGET])) {
+            $target = $packageConfig[self::CONFIG_TARGET];
         }
 
         /** @var string[] $files */
-        $files = $packageConfig['files'];
+        $files = $packageConfig[self::CONFIG_FILES];
         return [
-            'version'   => $packageConfig['version'],
+            'version'   => $packageConfig[self::CONFIG_VERSION],
             'source'    => $source,
             'target'    => $target,
             'files'     => $files,
