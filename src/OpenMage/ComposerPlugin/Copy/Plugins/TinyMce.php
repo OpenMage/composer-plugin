@@ -72,7 +72,7 @@ TEXT;
 
         $version = $package->getVersion();
         $versionParts = explode('.', $version);
-        $versionMain = (int) array_first($versionParts);
+        $versionMain = (int) $versionParts[0];
 
         switch ($versionMain) {
             case 6:
