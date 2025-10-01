@@ -14,6 +14,7 @@ namespace OpenMage\ComposerPlugin\Copy\Plugins;
 use Composer\Package\BasePackage;
 use OpenMage\ComposerPlugin\Copy;
 use Symfony\Component\Filesystem\Exception\IOException;
+use Symfony\Component\Filesystem\Filesystem;
 
 /**
  * Class TinyMce
@@ -22,21 +23,6 @@ class TinyMce extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerIn
 {
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
-
-    public const TINYMCE_LICENSE_FILE_TEXT  = <<<TEXT
-THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
-NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL TINYMCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
-AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
-THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-TEXT;
-
-    public const TINYMCE_LICENSE_NOTE_TEXT  = <<<TEXT
-THE USE OF TINYMCE IN THIS PROJECT IS POSSIBLE ON THE BASIS OF THE AGREEMENT CONCLUDED BETWEEN
-THE OWNER OF TINYMCE AND THE COMMUNITY OF THIS OPEN-SOURCE PROJECT. UNDER THE CONCLUDED
-AGREEMENT, IT IS PROHIBITED TO USE TINYMCE OUTSIDE OF THIS PROJECT. IF THIS IS THE CASE, TINYMCE MUST
-BE USED IN LINE WITH THE ORIGINAL OPEN-SOURCE LICENSE.
-TEXT;
 
     public function getComposerName(): string
     {
@@ -60,21 +46,21 @@ TEXT;
 
     public function processComposerInstall(): void
     {
-        if (is_null($this->event)) {
-            return;
-        }
-
         $package = $this->getComposerPackage();
         if (!$package instanceof BasePackage) {
+            $this->removedTinyMceLicenseFiles();
             return;
         }
 
         $version = $package->getVersion();
-        switch ((int) $version[0]) {
+        $versionMain = explode('.', $version, 1);
+        $versionMain = (int) $version[0];
+
+        switch ($versionMain) {
             case 6:
                 $this->removedTinyMceLicenseFiles();
                 break;
-            case 7:
+            case $versionMain >= 7:
                 $this->addTinyMceLicenseFile();
                 $this->addTinyMceLicenseNote();
                 break;
@@ -85,20 +71,37 @@ TEXT;
 
     private function addTinyMceLicenseFile(): void
     {
+        $content = <<<TEXT
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL TINYMCE OR ITS LICENSORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+TEXT;
+
+        $filesystem = new Filesystem();
+
         try {
-            $this->getFileSystem()->dumpFile($this->getCwd() . '/' . self::TINYMCE_LICENSE_FILE, self::TINYMCE_LICENSE_FILE_TEXT);
-            if (!is_null($this->event) && $this->event->getIO()->isVerbose()) {
+            $filesystem->dumpFile($this->getCwd() . '/' . self::TINYMCE_LICENSE_FILE, $content);
+            if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_FILE));
             }
-        } catch (IOException $exception) {
-            if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
-            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
         }
     }
 
     private function addTinyMceLicenseNote(): void
     {
+        $content = <<<TEXT
+THE USE OF TINYMCE IN THIS PROJECT IS POSSIBLE ON THE BASIS OF THE AGREEMENT CONCLUDED BETWEEN
+THE OWNER OF TINYMCE AND THE COMMUNITY OF THIS OPEN-SOURCE PROJECT. UNDER THE CONCLUDED
+AGREEMENT, IT IS PROHIBITED TO USE TINYMCE OUTSIDE OF THIS PROJECT. IF THIS IS THE CASE, TINYMCE MUST
+BE USED IN LINE WITH THE ORIGINAL OPEN-SOURCE LICENSE.
+TEXT;
+
+        $filesystem = new Filesystem();
+
         try {
             $filePath = sprintf(
                 '%s/%s/%s',
@@ -107,14 +110,12 @@ TEXT;
                 self::TINYMCE_LICENSE_NOTE,
             );
 
-            $this->getFileSystem()->dumpFile($filePath, self::TINYMCE_LICENSE_NOTE_TEXT);
-            if (!is_null($this->event) && $this->event->getIO()->isVerbose()) {
+            $filesystem->dumpFile($filePath, $content);
+            if ($this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_NOTE));
             }
-        } catch (IOException $exception) {
-            if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
-            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
         }
     }
 
@@ -125,15 +126,15 @@ TEXT;
             $this->getComposerSource() . '/' . self::TINYMCE_LICENSE_NOTE,
         ];
 
+        $filesystem = new Filesystem();
+
         try {
-            $this->getFileSystem()->remove($files);
-            if (!is_null($this->event) && $this->event->getIO()->isVeryVerbose()) {
+            $filesystem->remove($files);
+            if ($this->event->getIO()->isVeryVerbose()) {
                 $this->event->getIO()->write(sprintf('Removed %s and %s', self::TINYMCE_LICENSE_FILE, self::TINYMCE_LICENSE_NOTE));
             }
-        } catch (IOException $exception) {
-            if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
-            }
+        } catch (IOException $IOException) {
+            $this->event->getIO()->write($IOException->getMessage());
         }
     }
 }
