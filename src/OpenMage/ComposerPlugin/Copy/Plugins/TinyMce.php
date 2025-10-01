@@ -66,15 +66,19 @@ TEXT;
 
         $package = $this->getComposerPackage();
         if (!$package instanceof BasePackage) {
+            $this->removedTinyMceLicenseFiles();
             return;
         }
 
         $version = $package->getVersion();
-        switch ((int) $version[0]) {
+        $versionParts = explode('.', $version);
+        $versionMain = (int) $versionParts[0];
+
+        switch ($versionMain) {
             case 6:
                 $this->removedTinyMceLicenseFiles();
                 break;
-            case 7:
+            default:
                 $this->addTinyMceLicenseFile();
                 $this->addTinyMceLicenseNote();
                 break;
