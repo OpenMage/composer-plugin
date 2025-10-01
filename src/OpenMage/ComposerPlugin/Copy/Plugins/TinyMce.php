@@ -53,8 +53,8 @@ class TinyMce extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerIn
         }
 
         $version = $package->getVersion();
-        $versionMain = explode('.', $version, 1);
-        $versionMain = (int) $version[0];
+        $versionParts = explode('.', $version);
+        $versionMain = (int) $versionParts[0];
 
         switch ($versionMain) {
             case 6:
