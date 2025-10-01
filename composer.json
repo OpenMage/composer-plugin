@@ -23,7 +23,8 @@
 		"php": ">=7.4",
 		"composer-plugin-api": "^2.0",
 		"symfony/filesystem": "*",
-		"symfony/finder": "*"
+		"symfony/finder": "*",
+		"symfony/polyfill-php85": "^v1.33.0"
 	},
 	"require-dev": {
 		"composer/composer": "^2.8",
@@ -33,8 +34,7 @@
 		"phpstan/phpstan-phpunit": "^2.0",
 		"phpunit/phpunit": "^9.6",
 		"phpmd/phpmd": "^2.15",
-		"friendsofphp/php-cs-fixer": "^3.67",
-		"symfony/polyfill-php85": "^v1.33.0"
+		"friendsofphp/php-cs-fixer": "^3.67"
 	},
 	"extra": {
 		"class": "OpenMage\\ComposerPlugin\\Plugin"
