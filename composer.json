@@ -33,7 +33,8 @@
 		"phpstan/phpstan-phpunit": "^2.0",
 		"phpunit/phpunit": "^9.6",
 		"phpmd/phpmd": "^2.15",
-		"friendsofphp/php-cs-fixer": "^3.67"
+		"friendsofphp/php-cs-fixer": "^3.67",
+		"symfony/polyfill-php85": "^v1.33.0"
 	},
 	"extra": {
 		"class": "OpenMage\\ComposerPlugin\\Plugin"
