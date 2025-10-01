@@ -72,10 +72,10 @@ TEXT;
 
         $version = $package->getVersion();
         $versionParts = explode('.', $version);
-        $versionMain = (int) $versionParts[0];
+        $versionMain = (int) array_first($versionParts);
 
         switch ($versionMain) {
-            case 6:
+            case $versionMain <= 6:
                 $this->removedTinyMceLicenseFiles();
                 break;
             default:
