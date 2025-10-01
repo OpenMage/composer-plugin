@@ -75,7 +75,7 @@ TEXT;
         $versionMain = (int) array_first($versionParts);
 
         switch ($versionMain) {
-            case $versionMain <= 6:
+            case 6:
                 $this->removedTinyMceLicenseFiles();
                 break;
             default:
