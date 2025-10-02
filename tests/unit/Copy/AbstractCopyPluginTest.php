@@ -35,6 +35,6 @@ class AbstractCopyPluginTest extends TestCase
      */
     public function testGetFileSystem(): void
     {
-        static::assertInstanceOf(Filesystem::class, $this->subject->getFileSystem());
+        self::assertInstanceOf(Filesystem::class, $this->subject->getFileSystem());
     }
 }

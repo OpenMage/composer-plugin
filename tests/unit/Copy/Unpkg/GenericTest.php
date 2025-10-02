@@ -50,7 +50,7 @@ class GenericTest extends TestCase
      */
     public function testGetUnpkgName(): void
     {
-        static::assertSame('name', $this->subject->getUnpkgName());
+        self::assertSame('name', $this->subject->getUnpkgName());
     }
 
     /**
@@ -66,7 +66,7 @@ class GenericTest extends TestCase
      */
     public function testGetUnpkgVersion(): void
     {
-        static::assertSame('version', $this->subject->getUnpkgVersion());
+        self::assertSame('version', $this->subject->getUnpkgVersion());
     }
 
     /**
@@ -81,7 +81,7 @@ class GenericTest extends TestCase
      */
     public function testGetUnpkgSource(): void
     {
-        static::assertSame('source', $this->subject->getUnpkgSource());
+        self::assertSame('source', $this->subject->getUnpkgSource());
     }
 
     /**
@@ -96,7 +96,7 @@ class GenericTest extends TestCase
      */
     public function testGetUnpkgFiles(): void
     {
-        static::assertSame([], $this->subject->getUnpkgFiles());
+        self::assertSame([], $this->subject->getUnpkgFiles());
     }
 
     /**
@@ -111,6 +111,6 @@ class GenericTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        static::assertSame('target', $this->subject->getCopyTarget());
+        self::assertSame('target', $this->subject->getCopyTarget());
     }
 }
