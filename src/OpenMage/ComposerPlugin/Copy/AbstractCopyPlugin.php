@@ -276,9 +276,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $this->composerPackages[$vendorName] ?? null;
     }
 
-    protected function setInstalledComposerPackage(string $vendorName, BasePackage $package): void
+    protected function setInstalledComposerPackage(string $vendorName, BasePackage $basePackage): void
     {
-        $this->composerPackages[$vendorName] = $package;
+        $this->composerPackages[$vendorName] = $basePackage;
     }
 
     public function getFileSystem(): Filesystem
