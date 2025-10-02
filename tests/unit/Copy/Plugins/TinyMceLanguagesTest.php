@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\Plugins\TinyMceLanguages as Subject;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
-class TinyMceLanguagesTest extends TestCase
+final class TinyMceLanguagesTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -35,7 +35,7 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        static::assertSame('mklkj/tinymce-i18n', $this->subject->getComposerName());
+        self::assertSame('mklkj/tinymce-i18n', $this->subject->getComposerName());
     }
 
     /**
@@ -44,9 +44,9 @@ class TinyMceLanguagesTest extends TestCase
     public function testGetComposerSource(): void
     {
         try {
-            static::assertSame('langs7', $this->subject->getComposerSource());
-        } catch (OutOfBoundsException $exception) {
-            static::assertSame('Package "tinymce/tinymce" is not installed', $exception->getMessage());
+            self::assertSame('langs7', $this->subject->getComposerSource());
+        } catch (OutOfBoundsException $outOfBoundsException) {
+            self::assertSame('Package "tinymce/tinymce" is not installed', $outOfBoundsException->getMessage());
         }
     }
 
@@ -55,7 +55,7 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        static::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
+        self::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -63,6 +63,6 @@ class TinyMceLanguagesTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        static::assertSame('js/lib/tinymce/langs', $this->subject->getCopyTarget());
+        self::assertSame('js/lib/tinymce/langs', $this->subject->getCopyTarget());
     }
 }

@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test;
 use OpenMage\ComposerPlugin\Plugin as Subject;
 use PHPUnit\Framework\TestCase;
 
-class PluginTest extends TestCase
+final class PluginTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject();
     }
@@ -46,7 +46,7 @@ class PluginTest extends TestCase
                 ],
             ],
         ];
-        static::assertSame($events, $this->subject->getSubscribedEvents());
+        self::assertSame($events, $this->subject->getSubscribedEvents());
     }
 
     /**
@@ -71,6 +71,6 @@ class PluginTest extends TestCase
      */
     public function testProcessCopy(): void
     {
-        static::assertNull($this->subject->processCopy(null));
+        self::assertNull($this->subject->processCopy(null));
     }
 }

@@ -2,6 +2,7 @@
 /vendor
 /.phpstan.cache
 /.phpunit.cache
+/.rector.result.cache
 .php-cs-fixer.cache
 .phpmd.result-cache.php
 composer.lock

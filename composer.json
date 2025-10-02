@@ -33,7 +33,8 @@
 		"phpstan/phpstan-phpunit": "^2.0",
 		"phpunit/phpunit": "^9.6",
 		"phpmd/phpmd": "^2.15",
-		"friendsofphp/php-cs-fixer": "^3.67"
+		"friendsofphp/php-cs-fixer": "^3.67",
+		"rector/rector": "^2.1.2"
 	},
 	"extra": {
 		"class": "OpenMage\\ComposerPlugin\\Plugin"
@@ -46,7 +47,9 @@
 		"phpstan:baseline": "XDEBUG_MODE=off php vendor/bin/phpstan analyze -b .phpstan.dist.baseline.neon",
 		"phpunit:test": "XDEBUG_MODE=off php vendor/bin/phpunit --configuration .phpunit.dist.xml --no-coverage",
 		"phpunit:coverage": "XDEBUG_MODE=coverage php vendor/bin/phpunit --configuration .phpunit.dist.xml --testdox",
-		"phpunit:coverage-local": "XDEBUG_MODE=coverage php vendor/bin/phpunit --configuration .phpunit.dist.xml --coverage-html build/coverage-composer-plugin --testdox"
+		"phpunit:coverage-local": "XDEBUG_MODE=coverage php vendor/bin/phpunit --configuration .phpunit.dist.xml --coverage-html build/coverage-composer-plugin --testdox",
+		"rector:test": "vendor/bin/rector process --config .rector.php --dry-run",
+		"rector:fix": "vendor/bin/rector process --config .rector.php"
 	},
 	"scripts-descriptions": {
 		"php-cs-fixer:test": "Run php-cs-fixer",
@@ -56,7 +59,9 @@
 		"phpstan:baseline": "Run phpstan and update baseline",
 		"phpunit:test": "Run PHPUnit",
 		"phpunit:coverage": "Run PHPUnit with code coverage (requires XDEBUG enabled)",
-		"phpunit:coverage-local": "Run PHPUnit with local HTML code coverage (requires XDEBUG enabled)"
+		"phpunit:coverage-local": "Run PHPUnit with local HTML code coverage (requires XDEBUG enabled)",
+		"rector:test": "Run rector",
+		"rector:fix": "Run rector and fix issues"
 	},
 	"funding": [
 		{

@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test\Copy\Plugins;
 use OpenMage\ComposerPlugin\Copy\Plugins\JQuery as Subject;
 use PHPUnit\Framework\TestCase;
 
-class JQueryTest extends TestCase
+final class JQueryTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -34,7 +34,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        static::assertSame('components/jquery', $this->subject->getComposerName());
+        self::assertSame('components/jquery', $this->subject->getComposerName());
     }
 
     /**
@@ -42,7 +42,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        static::assertSame('', $this->subject->getComposerSource());
+        self::assertSame('', $this->subject->getComposerSource());
     }
 
     /**
@@ -50,7 +50,7 @@ class JQueryTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        static::assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
+        self::assertSame(['*.js', '*.map'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -58,6 +58,6 @@ class JQueryTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        static::assertSame('js/lib/jquery', $this->subject->getCopyTarget());
+        self::assertSame('js/lib/jquery', $this->subject->getCopyTarget());
     }
 }

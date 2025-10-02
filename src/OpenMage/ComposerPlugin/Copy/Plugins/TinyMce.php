@@ -21,6 +21,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 class TinyMce extends Copy\AbstractCopyPlugin implements Copy\CopyFromComposerInterface
 {
     public const TINYMCE_LICENSE_FILE       = 'LICENSE_TINYMCE.txt';
+
     public const TINYMCE_LICENSE_NOTE       = 'LICENSE_TINYMCE_OPENMAGE.txt';
 
     public const TINYMCE_LICENSE_FILE_TEXT  = <<<TEXT
@@ -94,9 +95,9 @@ TEXT;
             if (!is_null($this->event) && $this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_FILE));
             }
-        } catch (IOException $exception) {
+        } catch (IOException $ioException) {
             if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
+                $this->event->getIO()->write($ioException->getMessage());
             }
         }
     }
@@ -115,9 +116,9 @@ TEXT;
             if (!is_null($this->event) && $this->event->getIO()->isVerbose()) {
                 $this->event->getIO()->write(sprintf('Added %s', self::TINYMCE_LICENSE_NOTE));
             }
-        } catch (IOException $exception) {
+        } catch (IOException $ioException) {
             if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
+                $this->event->getIO()->write($ioException->getMessage());
             }
         }
     }
@@ -134,9 +135,9 @@ TEXT;
             if (!is_null($this->event) && $this->event->getIO()->isVeryVerbose()) {
                 $this->event->getIO()->write(sprintf('Removed %s and %s', self::TINYMCE_LICENSE_FILE, self::TINYMCE_LICENSE_NOTE));
             }
-        } catch (IOException $exception) {
+        } catch (IOException $ioException) {
             if (!is_null($this->event)) {
-                $this->event->getIO()->write($exception->getMessage());
+                $this->event->getIO()->write($ioException->getMessage());
             }
         }
     }

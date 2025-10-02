@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test\Copy\Plugins;
 use OpenMage\ComposerPlugin\Copy\Plugins\TinyMce as Subject;
 use PHPUnit\Framework\TestCase;
 
-class TinyMceTest extends TestCase
+final class TinyMceTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -34,7 +34,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerName(): void
     {
-        static::assertSame('tinymce/tinymce', $this->subject->getComposerName());
+        self::assertSame('tinymce/tinymce', $this->subject->getComposerName());
     }
 
     /**
@@ -42,7 +42,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerSource(): void
     {
-        static::assertSame('', $this->subject->getComposerSource());
+        self::assertSame('', $this->subject->getComposerSource());
     }
 
     /**
@@ -50,7 +50,7 @@ class TinyMceTest extends TestCase
      */
     public function testGetComposerFiles(): void
     {
-        static::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
+        self::assertSame(['*.css', '*.js'], $this->subject->getComposerFiles());
     }
 
     /**
@@ -58,6 +58,6 @@ class TinyMceTest extends TestCase
      */
     public function testGetCopyTarget(): void
     {
-        static::assertSame('js/lib/tinymce', $this->subject->getCopyTarget());
+        self::assertSame('js/lib/tinymce', $this->subject->getCopyTarget());
     }
 }

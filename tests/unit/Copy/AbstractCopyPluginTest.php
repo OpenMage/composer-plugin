@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\AbstractCopyPlugin as Subject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Filesystem;
 
-class AbstractCopyPluginTest extends TestCase
+final class AbstractCopyPluginTest extends TestCase
 {
-    public Subject $subject;
+    public \PHPUnit\Framework\MockObject\MockObject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = $this->getMockForAbstractClass(Subject::class, [], '', false);
     }
@@ -35,6 +35,6 @@ class AbstractCopyPluginTest extends TestCase
      */
     public function testGetFileSystem(): void
     {
-        static::assertInstanceOf(Filesystem::class, $this->subject->getFileSystem());
+        self::assertInstanceOf(Filesystem::class, $this->subject->getFileSystem());
     }
 }

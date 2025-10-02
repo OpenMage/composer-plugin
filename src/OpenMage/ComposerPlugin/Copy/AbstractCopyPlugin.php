@@ -59,7 +59,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public function processComposerInstall(): void
     {
         $package = $this->getComposerPackage();
-        if (!$package || !$this instanceof CopyFromComposerInterface) {
+        if (!$package instanceof BasePackage || !$this instanceof CopyFromComposerInterface) {
             return;
         }
 
@@ -74,13 +74,14 @@ abstract class AbstractCopyPlugin implements CopyInterface
         $filesystem = $this->getFileSystem();
 
         if (!$filesystem->exists($copySourcePath) && $this instanceof CopyFromUnpkgInterface) {
-            if ($event && $event->getIO()->isVerbose()) {
+            if ($event instanceof Event && $event->getIO()->isVerbose()) {
                 $event->getIO()->write(sprintf(
                     'Fallback to Unpkg %s for %s',
                     $this->getUnpkgName(),
                     $this->getComposerName(),
                 ));
             }
+
             $this->processUnpkgInstall();
             return;
         }
@@ -96,11 +97,11 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
             try {
                 $filesystem->copy($copySource, $copytarget);
-                if ($event && $event->getIO()->isVeryVerbose()) {
+                if ($event instanceof Event && $event->getIO()->isVeryVerbose()) {
                     $event->getIO()->write(sprintf('Copy %s to %s', $copySource, $copytarget));
                 }
             } catch (IOException $exception) {
-                if ($event) {
+                if ($event instanceof Event) {
                     $event->getIO()->write($exception->getMessage());
                 }
             }
@@ -119,7 +120,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
         $event      = $this->getEvent();
         $sourcePath = $this->getUnpkSourcePath();
 
-        if ($event && $event->getIO()->isVerbose()) {
+        if ($event instanceof Event && $event->getIO()->isVerbose()) {
             $event->getIO()->write(sprintf(
                 'Trying to download %s %s from %s',
                 $this->getUnpkgName(),
@@ -133,29 +134,32 @@ abstract class AbstractCopyPlugin implements CopyInterface
             try {
                 $content = file_get_contents($sourceFilePath);
             } catch (ErrorException $errorException) {
-                if ($event) {
+                if ($event instanceof Event) {
                     $event->getIO()->write($errorException->getMessage());
                 }
+
                 return;
             }
 
             if (!$content) {
-                if ($event) {
+                if ($event instanceof Event) {
                     $event->getIO()->write(sprintf('Could not read from %s', $sourceFilePath));
                 }
+
                 return;
             }
 
             try {
                 $targetFilePath = $this->getCopyTargetPath() . '/' . $fileName;
                 $this->getFileSystem()->dumpFile($targetFilePath, $content);
-                if ($event && $event->getIO()->isVerbose()) {
+                if ($event instanceof Event && $event->getIO()->isVerbose()) {
                     $event->getIO()->write(sprintf('Added %s', $targetFilePath));
                 }
             } catch (IOException $exception) {
-                if ($event) {
+                if ($event instanceof Event) {
                     $event->getIO()->write($exception->getMessage());
                 }
+
                 return;
             }
         }
@@ -169,27 +173,29 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
         $vendorName = $this->getComposerName();
         $module = $this->getInstalledComposerPackage($vendorName);
-        if ($module) {
+        if ($module instanceof BasePackage) {
             return $module;
         }
 
         $event = $this->getEvent();
-        if (!$event) {
+        if (!$event instanceof Event) {
             return null;
         }
 
         $locker = $event->getComposer()->getLocker();
-        $repo   = $locker->getLockedRepository();
+        $lockArrayRepository   = $locker->getLockedRepository();
 
-        foreach ($repo->getPackages() as $package) {
-            if ($package->getName() === $vendorName) {
-                $this->setInstalledComposerPackage($vendorName, $package);
+        foreach ($lockArrayRepository->getPackages() as $basePackage) {
+            if ($basePackage->getName() === $vendorName) {
+                $this->setInstalledComposerPackage($vendorName, $basePackage);
                 if ($event->getIO()->isVerbose()) {
-                    $event->getIO()->write(sprintf('%s found with version %s', $vendorName, $package->getVersion()));
+                    $event->getIO()->write(sprintf('%s found with version %s', $vendorName, $basePackage->getVersion()));
                 }
+
                 return $this->getInstalledComposerPackage($vendorName);
             }
         }
+
         return null;
     }
 
@@ -202,8 +208,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
             $search  = ['{{package}}', '{{version}}'];
             $replace = [$this->getUnpkgName(), $this->getUnpkgVersion()];
             $path    = str_replace($search, $replace, CopyFromUnpkgInterface::UNPKG_URL);
-            return $path . ($this->getUnpkgSource() ? $this->getUnpkgSource() . '/' : '');
+            return $path . ($this->getUnpkgSource() !== '' && $this->getUnpkgSource() !== '0' ? $this->getUnpkgSource() . '/' : '');
         }
+
         return '';
     }
 
@@ -216,6 +223,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
         if ($cwd === false) {
             throw new Exception('This should not happen.');
         }
+
         return $cwd;
     }
 
@@ -225,7 +233,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
     protected function getVendorDirectoryFromComposer(): string
     {
         $event = $this->getEvent();
-        if (!$event) {
+        if (!$event instanceof Event) {
             return '';
         }
 
@@ -240,22 +248,20 @@ abstract class AbstractCopyPlugin implements CopyInterface
     protected function getMageRootDirectoryFromComposer(): string
     {
         $event = $this->getEvent();
-        if (!$event) {
+        if (!$event instanceof Event) {
             return '';
         }
 
         $composerExtra  = $event->getComposer()->getPackage()->getExtra();
-        $magentoRootDir = '';
-
         if (array_key_exists(self::EXTRA_MAGENTO_ROOT_DIR, $composerExtra) &&
-            $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.'
-        ) {
-            $magentoRootDir = $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] . '/';
+            $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] !== '.') {
+            return $composerExtra[self::EXTRA_MAGENTO_ROOT_DIR] . '/';
         }
-        return $magentoRootDir;
+
+        return '';
     }
 
-    private function getCopyTargetPath(): string
+    protected function getCopyTargetPath(): string
     {
         return sprintf(
             '%s/%s%s',
@@ -270,9 +276,9 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return $this->composerPackages[$vendorName] ?? null;
     }
 
-    private function setInstalledComposerPackage(string $vendorName, BasePackage $package): void
+    protected function setInstalledComposerPackage(string $vendorName, BasePackage $basePackage): void
     {
-        $this->composerPackages[$vendorName] = $package;
+        $this->composerPackages[$vendorName] = $basePackage;
     }
 
     public function getFileSystem(): Filesystem

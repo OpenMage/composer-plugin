@@ -9,7 +9,7 @@ return $config
         'modernize_types_casting' => true,
         'nullable_type_declaration_for_default_null_value' => true,
         'single_quote' => true,
-        'php_unit_test_case_static_method_calls' => true,
+        'php_unit_test_case_static_method_calls' => ['call_type' => 'self'],
         'trailing_comma_in_multiline' => ['after_heredoc' => true, 'elements' => ['arguments', 'array_destructuring', 'arrays']],
     ])
     ->setFinder(
