@@ -59,7 +59,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public function processComposerInstall(): void
     {
         $package = $this->getComposerPackage();
-        if (!$package instanceof \Composer\Package\BasePackage || !$this instanceof CopyFromComposerInterface) {
+        if (!$package instanceof BasePackage || !$this instanceof CopyFromComposerInterface) {
             return;
         }
 
@@ -173,7 +173,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
 
         $vendorName = $this->getComposerName();
         $module = $this->getInstalledComposerPackage($vendorName);
-        if ($module instanceof \Composer\Package\BasePackage) {
+        if ($module instanceof BasePackage) {
             return $module;
         }
 
