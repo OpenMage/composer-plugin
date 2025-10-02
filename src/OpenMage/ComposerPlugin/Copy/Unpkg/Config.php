@@ -19,13 +19,19 @@ use OpenMage\ComposerPlugin\Copy;
 class Config implements Copy\CopyFromUnpkgInterface
 {
     public const CONFIG_FILES   = 'files';
+
     public const CONFIG_SOURCE  = 'source';
+
     public const CONFIG_TARGET  = 'target';
+
     public const CONFIG_VERSION = 'version';
 
     private string $name    = '';
+
     private string $version = '';
+
     private string $source  = '';
+
     private string $target  = '';
 
     /**
@@ -75,6 +81,7 @@ class Config implements Copy\CopyFromUnpkgInterface
             $files = $packageConfig[self::CONFIG_FILES];
             return $files;
         }
+
         return null;
     }
 
@@ -86,6 +93,7 @@ class Config implements Copy\CopyFromUnpkgInterface
         if (array_key_exists(self::CONFIG_VERSION, $packageConfig) && is_string($packageConfig[self::CONFIG_VERSION])) {
             return trim($packageConfig[self::CONFIG_VERSION]);
         }
+
         return null;
     }
 
@@ -97,6 +105,7 @@ class Config implements Copy\CopyFromUnpkgInterface
         if (array_key_exists(self::CONFIG_SOURCE, $packageConfig) && is_string($packageConfig[self::CONFIG_SOURCE])) {
             return trim($packageConfig[self::CONFIG_SOURCE]);
         }
+
         return '';
     }
 
@@ -109,6 +118,7 @@ class Config implements Copy\CopyFromUnpkgInterface
             $target = str_replace(['../', './'], '', $packageConfig[self::CONFIG_TARGET]);
             return trim($target);
         }
+
         return '';
     }
 

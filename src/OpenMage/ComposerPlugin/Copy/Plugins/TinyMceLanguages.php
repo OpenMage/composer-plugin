@@ -54,6 +54,7 @@ class TinyMceLanguages extends Copy\AbstractCopyPlugin implements Copy\CopyFromC
         if (!InstalledVersions::isInstalled(self::TINYMCE)) {
             return;
         }
+
         parent::processComposerInstall();
     }
 }

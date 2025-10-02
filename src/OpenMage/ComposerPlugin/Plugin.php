@@ -86,6 +86,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $pluginLoaded->processComposerInstall();
                 continue;
             }
+
             if ($pluginLoaded instanceof Copy\AbstractCopyPlugin &&
                 $pluginLoaded instanceof Copy\CopyFromUnpkgInterface
             ) {
@@ -93,14 +94,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 continue;
             }
 
-            if ($this->io) {
+            if ($this->io instanceof IOInterface) {
                 $this->io->write('Could not load ' . $plugin);
             }
         }
 
         $plugins = $this->getUnpkgPackagesFromConfig();
-        foreach ($plugins as $pluginConfig) {
-            $pluginLoaded = new Generic($event, $pluginConfig);
+        foreach ($plugins as $plugin) {
+            $pluginLoaded = new Generic($event, $plugin);
             $pluginLoaded->processUnpkgInstall();
         }
     }
@@ -125,9 +126,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $config = $extra[CopyInterface::EXTRA_UNPKG_PACKAGES];
 
         if (!is_array($config)) {
-            if ($this->io) {
+            if ($this->io instanceof IOInterface) {
                 $this->io->write(sprintf('Configuration is invalid for %s', CopyInterface::EXTRA_UNPKG_PACKAGES));
             }
+
             return $packages;
         }
 
@@ -135,9 +137,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $config = new Config();
             $packageConfig = $config->getValidatedConfig($packageConfig);
             if (!$packageConfig) {
-                if ($this->io) {
+                if ($this->io instanceof IOInterface) {
                     $this->io->write(sprintf('Configuration is invalid for %s', $packageName));
                 }
+
                 continue;
             }
 
@@ -150,6 +153,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
             $packages[] = $config;
         }
+
         return $packages;
     }
 
@@ -163,6 +167,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         foreach ($filenames as $filename) {
             $namespaces[] = $this->getFullNamespace($filename) . '\\' . $this->getClassName($filename);
         }
+
         return $namespaces;
     }
 
@@ -198,6 +203,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         foreach ($finderFiles as $finderFile) {
             $filenames[] = $finderFile->getRealPath();
         }
+
         return $filenames;
     }
 }
