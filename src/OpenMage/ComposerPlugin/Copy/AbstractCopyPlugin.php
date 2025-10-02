@@ -261,9 +261,24 @@ abstract class AbstractCopyPlugin implements CopyInterface
         return '';
     }
 
+    protected function getCopyTargetPath(): string
+    {
+        return sprintf(
+            '%s/%s%s',
+            $this->getCwd(),
+            $this->getMageRootDirectoryFromComposer(),
+            $this->getCopyTarget(),
+        );
+    }
+
     protected function getInstalledComposerPackage(string $vendorName): ?BasePackage
     {
         return $this->composerPackages[$vendorName] ?? null;
+    }
+
+    protected function setInstalledComposerPackage(string $vendorName, BasePackage $package): void
+    {
+        $this->composerPackages[$vendorName] = $package;
     }
 
     public function getFileSystem(): Filesystem
