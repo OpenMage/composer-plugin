@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\Plugins\ChartJs as Subject;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
-class ChartJsTest extends TestCase
+final class ChartJsTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -46,8 +46,8 @@ class ChartJsTest extends TestCase
     {
         try {
             self::assertIsString($this->subject->getUnpkgVersion());
-        } catch (OutOfBoundsException $exception) {
-            self::assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
+        } catch (OutOfBoundsException $outOfBoundsException) {
+            self::assertSame('Package "nnnick/chartjs" is not installed', $outOfBoundsException->getMessage());
         }
     }
 

@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\Unpkg\Config;
 use OpenMage\ComposerPlugin\Copy\Unpkg\Generic as Subject;
 use PHPUnit\Framework\TestCase;
 
-class GenericTest extends TestCase
+final class GenericTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $config = new Config();
         $config->setUnpkgName('name');

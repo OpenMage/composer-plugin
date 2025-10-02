@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test;
 use OpenMage\ComposerPlugin\Plugin as Subject;
 use PHPUnit\Framework\TestCase;
 
-class PluginTest extends TestCase
+final class PluginTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject();
     }

@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\Plugins\Flatpickr as Subject;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
-class FlatpickrTest extends TestCase
+final class FlatpickrTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -45,8 +45,8 @@ class FlatpickrTest extends TestCase
     {
         try {
             self::assertIsString($this->subject->getUnpkgVersion());
-        } catch (OutOfBoundsException $exception) {
-            self::assertSame('Package "nnnick/chartjs" is not installed', $exception->getMessage());
+        } catch (OutOfBoundsException $outOfBoundsException) {
+            self::assertSame('Package "nnnick/chartjs" is not installed', $outOfBoundsException->getMessage());
         }
     }
 

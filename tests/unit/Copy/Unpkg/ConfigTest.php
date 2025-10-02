@@ -21,11 +21,11 @@ use Generator;
 use OpenMage\ComposerPlugin\Copy\Unpkg\Config as Subject;
 use PHPUnit\Framework\TestCase;
 
-class ConfigTest extends TestCase
+final class ConfigTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -34,7 +34,7 @@ class ConfigTest extends TestCase
      * @covers \OpenMage\ComposerPlugin\Copy\Unpkg\Config::getValidatedConfig()
      * @dataProvider provideGetValidatedConfig
      */
-    public function testGetValidatedConfig(?array $expectedResult, $packageConfig): void
+    public function testGetValidatedConfig(?array $expectedResult, ?array $packageConfig): void
     {
         self::assertSame($expectedResult, $this->subject->getValidatedConfig($packageConfig));
     }

@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test\Copy\Plugins;
 use OpenMage\ComposerPlugin\Copy\Plugins\FlowJs as Subject;
 use PHPUnit\Framework\TestCase;
 
-class FlowJsTest extends TestCase
+final class FlowJsTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }

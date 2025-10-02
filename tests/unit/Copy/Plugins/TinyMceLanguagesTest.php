@@ -21,11 +21,11 @@ use OpenMage\ComposerPlugin\Copy\Plugins\TinyMceLanguages as Subject;
 use OutOfBoundsException;
 use PHPUnit\Framework\TestCase;
 
-class TinyMceLanguagesTest extends TestCase
+final class TinyMceLanguagesTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
@@ -45,8 +45,8 @@ class TinyMceLanguagesTest extends TestCase
     {
         try {
             self::assertSame('langs7', $this->subject->getComposerSource());
-        } catch (OutOfBoundsException $exception) {
-            self::assertSame('Package "tinymce/tinymce" is not installed', $exception->getMessage());
+        } catch (OutOfBoundsException $outOfBoundsException) {
+            self::assertSame('Package "tinymce/tinymce" is not installed', $outOfBoundsException->getMessage());
         }
     }
 

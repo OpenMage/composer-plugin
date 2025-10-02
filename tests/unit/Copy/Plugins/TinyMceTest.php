@@ -20,11 +20,11 @@ namespace OpenMage\ComposerPlugin\Test\Copy\Plugins;
 use OpenMage\ComposerPlugin\Copy\Plugins\TinyMce as Subject;
 use PHPUnit\Framework\TestCase;
 
-class TinyMceTest extends TestCase
+final class TinyMceTest extends TestCase
 {
     public Subject $subject;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->subject = new Subject(null);
     }
