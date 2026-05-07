@@ -185,7 +185,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $array = (array) preg_grep('/^namespace /', $lines);
         $namespaceLine = array_shift($array);
         $match = [];
-        preg_match('/^namespace (.*);$/', $namespaceLine, $match);
+        preg_match('/^namespace (.*);$/', (string) $namespaceLine, $match);
         return (string) array_pop($match);
     }
 

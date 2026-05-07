@@ -19,12 +19,8 @@ use OpenMage\ComposerPlugin\Copy;
  */
 class Generic extends Copy\AbstractCopyPlugin implements Copy\CopyFromUnpkgInterface
 {
-    private Config $config;
-
-    public function __construct(?Event $event, Config $config)
+    public function __construct(?Event $event, private readonly Config $config)
     {
-        $this->config = $config;
-
         parent::__construct($event);
     }
 

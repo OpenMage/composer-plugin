@@ -22,7 +22,7 @@ try {
         ->withSkipPath(__DIR__ . '/vendor')
         ->withSkip([
             # skip: use static methods
-            PreferPHPUnitThisCallRector::class
+            PreferPHPUnitThisCallRector::class,
         ])
         ->withPreparedSets(
             deadCode: true,

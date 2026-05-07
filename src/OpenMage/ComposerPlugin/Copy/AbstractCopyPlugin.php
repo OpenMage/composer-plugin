@@ -39,17 +39,14 @@ abstract class AbstractCopyPlugin implements CopyInterface
     public array $unpkgPackages = [];
 
     /**
-     * Composer event
-     */
-    protected ?Event $event;
-
-    /**
      * @codeCoverageIgnore
      */
-    public function __construct(?Event $event)
-    {
-        $this->event = $event;
-    }
+    public function __construct(
+        /**
+         * Composer event
+         */
+        protected ?Event $event
+    ) {}
 
     /**
      * Copy files as defined in composer copy-plugin
@@ -96,7 +93,7 @@ abstract class AbstractCopyPlugin implements CopyInterface
             $copytarget = $this->getCopyTargetPath() . '/' . $file->getRelativePathname();
 
             try {
-                $filesystem->copy($copySource, $copytarget);
+                $filesystem->copy($copySource, $copytarget, true);
                 if ($event instanceof Event && $event->getIO()->isVeryVerbose()) {
                     $event->getIO()->write(sprintf('Copy %s to %s', $copySource, $copytarget));
                 }
